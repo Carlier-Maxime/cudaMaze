@@ -11,7 +11,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <random>
 
-#include "stb_image_write.h"
+#include "../third_party/stb_image_write.h"
 
 const cudaDeviceProp DEVICE_PROP = [] {
     cudaDeviceProp deviceProp{};
