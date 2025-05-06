@@ -13,6 +13,7 @@
 
 #include "../third_party/stb_image_write.h"
 #include "utils/chronometer.hpp"
+#include "utils/math_utils.hpp"
 
 const cudaDeviceProp DEVICE_PROP = [] {
     cudaDeviceProp deviceProp{};
@@ -122,17 +123,6 @@ __host__ void cudaBitonicSort(GRID_TYPE *arr, GRID_TYPE *keys, const uint32_t si
             cudaDeviceSynchronize();
         }
     }
-}
-
-__host__ uint32_t roundToNextPowerOfTwo(uint32_t a) {
-    if (a == 0) return 0;
-    a--;
-    a |= a >> 1;
-    a |= a >> 2;
-    a |= a >> 4;
-    a |= a >> 8;
-    a |= a >> 16;
-    return ++a;
 }
 
 template <typename GRID_TYPE>
