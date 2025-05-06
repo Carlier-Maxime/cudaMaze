@@ -16,6 +16,7 @@
 #include "cuda/random.cuh"
 #include "cuda/utils.cuh"
 #include "cuda/sort.cuh"
+#include "cuda/array.cuh"
 
 template <typename GRID_TYPE>
 __global__ void kernelInitMazeGrid(GRID_TYPE *maze, GRID_TYPE *ids, const size_t height, const size_t width) {
@@ -60,26 +61,6 @@ __global__ void kernelMazeApplyPairs(GRID_TYPE *maze, GRID_TYPE *pairs, const si
     while (pairs[val-1] != 0) val = pairs[val-1];
     maze[i] = val;
     if (val != 1) *cond_ret = true;
-}
-
-template <typename GRID_TYPE>
-__global__ void kernelInitArrayRange(GRID_TYPE *grid, const size_t size, GRID_TYPE start, GRID_TYPE increment) {
-    const auto i = blockIdx.x * blockDim.x + threadIdx.x;
-    if (i < size) grid[i] = start + i*increment;
-}
-
-template <typename GRID_TYPE>
-__host__ auto cudaArrayToHost(GRID_TYPE *d_arr, size_t size) {
-    auto arr = std::vector<GRID_TYPE>(size);
-    cudaMemcpy(arr.data(), d_arr, sizeof(GRID_TYPE) * size, cudaMemcpyDefault);
-    return arr;
-}
-
-template <typename GRID_TYPE>
-__host__ void showCudaArrayInHost(GRID_TYPE *d_arr, size_t size) {
-    auto arr = cudaArrayToHost(d_arr, size);
-    for ( const auto e : arr) std::cout << e << ' ';
-    std::cout << std::endl << std::endl;
 }
 
 template <typename GRID_TYPE>
@@ -132,7 +113,7 @@ public:
         std::cout << "allocate data GPU, complete in : " << chrono << std::endl;
         chrono.reset();
         kernelInitCurand<<<GET_MAX_BLOCKS_1D(size), DEFAULT_THREADS_DIMS_1D>>>(seed, d_rngStates, size);
-        kernelInitArrayRange<uint32_t><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, ids_size, 1, 1);
+        kernelInitArrayRange1D<uint32_t><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, ids_size, 1, 1);
         cudaDeviceSynchronize();
         kernelRandomArray<<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_keys, d_rngStates, ids_size);
         cudaDeviceSynchronize();
