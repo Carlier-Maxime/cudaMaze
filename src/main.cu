@@ -15,21 +15,7 @@
 #include "utils/chronometer.hpp"
 #include "utils/math_utils.hpp"
 #include "cuda/random.cuh"
-
-const cudaDeviceProp DEVICE_PROP = [] {
-    cudaDeviceProp deviceProp{};
-    cudaGetDeviceProperties(&deviceProp, 0);
-    return deviceProp;
-}();
-const auto DEFAULT_THREADS_DIMS_1D = dim3(DEVICE_PROP.maxThreadsPerBlock, 1, 1);
-const auto DEFAULT_THREADS_DIMS_2D = [] {
-    auto td = dim3(static_cast<uint16_t>(sqrtl(DEVICE_PROP.maxThreadsPerBlock)));
-    td.y = td.x;
-    return td;
-}();
-
-#define HANDLE_ERROR(error) if (cudaError_t err = error; err != cudaSuccess) {std::cout << "CudaError : " << cudaGetErrorString(err) << std::endl;}
-#define GET_MAX_BLOCKS_1D(size) ((size / DEFAULT_THREADS_DIMS_1D.x) + ((size % DEFAULT_THREADS_DIMS_1D.x) ? 1 : 0))
+#include "cuda/utils.cuh"
 
 template <typename GRID_TYPE>
 __global__ void kernelInitMazeGrid(GRID_TYPE *maze, GRID_TYPE *ids, const size_t height, const size_t width) {
@@ -81,13 +67,6 @@ __global__ void kernelInitArrayRange(GRID_TYPE *grid, const size_t size, GRID_TY
     const auto i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < size) grid[i] = start + i*increment;
 }
-
-template <typename TYPE>
-__device__ void swap(TYPE& a, TYPE& b) noexcept {
-    TYPE tmp = a;
-    a = b;
-    b = tmp;
-};
 
 template <typename GRID_TYPE>
 __global__ void kernelBitonicSortStep(GRID_TYPE *arr, GRID_TYPE *keys, const uint32_t size, const uint32_t j) {
