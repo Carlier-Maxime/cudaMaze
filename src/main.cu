@@ -4,7 +4,6 @@
 #include <vector>
 #include <iomanip>
 #include <curand_kernel.h>
-#include <cooperative_groups.h>
 #include <ostream>
 #include <set>
 
@@ -208,10 +207,6 @@ public:
 };
 
 int main() {
-    if (!DEVICE_PROP.cooperativeLaunch) {
-        std::cerr << "You graphic card does not support cooperative launch, but is used in bitonic sort." << std::endl;
-        return EXIT_FAILURE;
-    }
     uint16_t h, w;
     std::cout << "height : ";
     std::cin >> h;
