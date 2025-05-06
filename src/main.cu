@@ -112,11 +112,10 @@ public:
         std::cout << "init intermediate data, complete in : " << chrono << std::endl;
         chrono.reset();
         cudaBitonicSort<uint32_t>(d_pairs, d_keys, ids_size);
-        std::random_device dev;
-        std::mt19937 rng(dev());
-        std::uniform_int_distribution<std::mt19937::result_type> dist(0, pairs_size_real_used);
+        std::mt19937 rng(seed);
+        const size_t newIndexForOne = std::uniform_int_distribution<std::mt19937::result_type>(0, pairs_size_real_used)(rng);
         cudaDeviceSynchronize();
-        kernelOneInRealPairsSize<<<GET_MAX_BLOCKS_1D(size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, ids_size, dist(rng));
+        kernelOneInRealPairsSize<<<GET_MAX_BLOCKS_1D(size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, ids_size, newIndexForOne);
         cudaDeviceSynchronize();
         std::cout << "shuffle pairs, complete in : " << chrono << std::endl;
         HANDLE_ERROR(cudaFree(d_keys));
