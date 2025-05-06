@@ -14,6 +14,7 @@
 #include "../third_party/stb_image_write.h"
 #include "utils/chronometer.hpp"
 #include "utils/math_utils.hpp"
+#include "cuda/random.cuh"
 
 const cudaDeviceProp DEVICE_PROP = [] {
     cudaDeviceProp deviceProp{};
@@ -79,14 +80,6 @@ template <typename GRID_TYPE>
 __global__ void kernelInitArrayRange(GRID_TYPE *grid, const size_t size, GRID_TYPE start, GRID_TYPE increment) {
     const auto i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < size) grid[i] = start + i*increment;
-}
-
-__global__ void kernelInitCurand(size_t seed, curandState *states, const size_t size) {
-    if (const auto id = blockIdx.x * blockDim.x + threadIdx.x; id < size) curand_init(seed, id, 0, &states[id]);
-}
-
-__global__ void kernelRandomArray(uint32_t *arr, curandState *states, const size_t size) {
-    if (const auto i = blockIdx.x * blockDim.x + threadIdx.x; i < size) arr[i] = curand(states+i);
 }
 
 template <typename TYPE>
