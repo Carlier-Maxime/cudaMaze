@@ -12,6 +12,7 @@
 #include <random>
 
 #include "../third_party/stb_image_write.h"
+#include "utils/chronometer.hpp"
 
 const cudaDeviceProp DEVICE_PROP = [] {
     cudaDeviceProp deviceProp{};
@@ -147,22 +148,6 @@ __host__ void showCudaArrayInHost(GRID_TYPE *d_arr, size_t size) {
     for ( const auto e : arr) std::cout << e << ' ';
     std::cout << std::endl << std::endl;
 }
-
-class Chronometer {
-    public:
-        Chronometer() : start(std::chrono::high_resolution_clock::now()) {}
-        void reset() {
-            start = std::chrono::high_resolution_clock::now();
-        }
-        [[nodiscard]] auto elapsed() const {
-            return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now() - start).count();
-        }
-        friend std::ostream & operator<<(std::ostream &os, const Chronometer &obj) {
-            return os << obj.elapsed() << " ms";
-        }
-    private:
-        std::chrono::time_point<std::chrono::high_resolution_clock> start;
-};
 
 template <typename GRID_TYPE>
 __host__ void checkCudaPairs(GRID_TYPE *d_pairs, size_t size) {
