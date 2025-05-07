@@ -67,9 +67,8 @@ __host__ void checkCudaPairs(GRID_TYPE *d_pairs, size_t size) {
 template <typename GRID_TYPE>
 __global__ void kernelOneInRealPairsSize(GRID_TYPE *pairs, const size_t size, size_t newIndexForOne) {
     const auto i = d_getArray1DIndex();
-    if (i >= size || i!=newIndexForOne || pairs[i] != 1) return;
-    pairs[i] = pairs[newIndexForOne];
-    pairs[newIndexForOne] = 1;
+    if (i >= size || pairs[i] != 1) return;
+    swap(pairs[i], pairs[newIndexForOne]);
 }
 
 template <typename MAZE_SOURCE_TYPE>
