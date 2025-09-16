@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <curand_kernel.h>
 
 __global__ void kernelInitCurand(size_t seed, curandState *states, size_t size);

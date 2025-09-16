@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.29)
+set(CMAKE_CUDA_ARCHITECTURES "native")
 project(cuda_maze CUDA CXX)
 
 set(CMAKE_CUDA_STANDARD 20)
