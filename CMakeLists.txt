@@ -10,8 +10,8 @@ file(GLOB_RECURSE SOURCES
         "third_party/*.hpp"
         "src/*.hpp"
         "src/*.h"
-        "src/*.cu"
         "src/*.cpp"
+        "src/*.cu"
 )
 
 
