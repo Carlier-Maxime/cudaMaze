@@ -127,10 +127,10 @@ public:
 
 int main() {
     uint16_t h, w;
-    std::cout << "height : ";
-    std::cin >> h;
     std::cout << "width : ";
     std::cin >> w;
+    std::cout << "height : ";
+    std::cin >> h;
     const Maze maze(h, w);
     auto chrono = Chronometer();
     maze.toPNG("maze.png");
