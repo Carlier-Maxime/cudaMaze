@@ -26,8 +26,11 @@ __global__ void kernelMazePairForBreakWall(GRID_TYPE *maze, curandState *rng_sta
     if (y2 >= height || x2 >= width || maze[i2] != 0) return;
     const uint16_t y3 = y2 + ay, x3 = x2 + ax;
     uint32_t i3 = y3 * width + x3;
-    if (y3 >= height || x3 >= width || maze[i3] == 0 || maze[i3] >= maze[i] || atomicCAS(pairs+maze[i]-1, 0, maze[i3]) != 0) return;
-    maze[i2] = maze[i];
+    uint32_t i1 = i;
+    if (y3 >= height || x3 >= width || maze[i3] == 0 || maze[i3] == maze[i1]) return;
+    if (maze[i3] > maze[i1]) swap(i1, i3);
+    if (maze[i3] < maze[i1] && atomicCAS(pairs+maze[i1]-1, 0, maze[i3]) != 0) return;
+    maze[i2] = maze[i1];
 }
 
 template<typename GRID_TYPE>
