@@ -10,7 +10,7 @@
 #include "utils/math_utils.hpp"
 
 Maze::Maze(const uint16_t height_, const uint16_t width_, const size_t seed_, const bool verbose) :
-        height(height_+(height_&1)), width(width_+(width_&1)), seed(seed_), grid(height*width) {
+        height(height_+!(height_&1)), width(width_+!(width_&1)), seed(seed_), grid(height*width) {
     if (verbose) std::cout << "Maze: " << height << "x" << width << " with seed " << seed << std::endl;
 }
 
@@ -31,7 +31,7 @@ size_t Maze::getIndexForOne() const {
 }
 
 size_t Maze::getPairsSize() const {
-    return (height>>1) * (width>>1);
+    return ((height+(height&1))>>1) * ((width+(width&1))>>1);
 }
 
 size_t Maze::getSize() const {

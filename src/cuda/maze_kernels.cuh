@@ -4,7 +4,7 @@
 template <typename GRID_TYPE>
 __global__ void kernelInitMazeGrid(GRID_TYPE *maze, GRID_TYPE *ids, const size_t height, const size_t width) {
     const auto [y, x, i] = d_getArray2DIndices(width);
-    if (y < height && x < width) maze[i] = y&1 || x&1 ? 0 : ids[(y>>1) * (width>>1) + (x>>1)];
+    if (y < height && x < width) maze[i] = y&1 || x&1 ? 0 : ids[(y>>1) * (width+(width&1)>>1) + (x>>1)];
 }
 
 template <typename GRID_TYPE>
