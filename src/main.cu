@@ -35,8 +35,10 @@ class MazeCuda : public Maze {
         return std::make_tuple(d_grid, d_rngStates, d_pairs, d_keys, d_cond);
     }
 public:
-    MazeCuda(const uint16_t height_, const uint16_t width_) : MazeCuda(height_, width_, false) {}
-    MazeCuda(const uint16_t height_, const uint16_t width_, const bool verbose) : Maze(height_, width_, verbose) {
+    MazeCuda(const uint16_t height_, const uint16_t width_, const size_t seed_): MazeCuda(height_, width_, seed_, false){}
+    MazeCuda(const uint16_t height_, const uint16_t width_, const bool verbose): MazeCuda(height_, width_, time(nullptr), verbose){}
+    MazeCuda(const uint16_t height_, const uint16_t width_): MazeCuda(height_, width_, false){}
+    MazeCuda(const uint16_t height_, const uint16_t width_, const size_t seed_, const bool verbose) : Maze(height_, width_, seed_, verbose) {
         auto chronoAll = Chronometer(), chrono = Chronometer();
         const auto height = getHeight(), width = getWidth();
         const auto size = getSize();
@@ -112,7 +114,7 @@ int main() {
     std::cin >> w;
     std::cout << "height : ";
     std::cin >> h;
-    const MazeCuda maze(h, w);
+    const MazeCuda maze(h, w, true);
     auto chrono = Chronometer();
     maze.toPNG("maze.png");
     std::cout << "Save Maze to PNG in : " << chrono << std::endl;
