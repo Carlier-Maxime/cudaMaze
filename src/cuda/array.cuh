@@ -24,6 +24,12 @@ __global__ void kernelInitArrayRange1D(GRID_TYPE *grid, const size_t size, GRID_
 }
 
 template <typename GRID_TYPE>
+__global__ void kernelInitArray1D(GRID_TYPE *grid, const size_t size, const GRID_TYPE value) {
+    const auto i = d_getArray1DIndex();
+    if (i < size) grid[i] = value;
+}
+
+template <typename GRID_TYPE>
 __host__ auto cudaArrayToHost(GRID_TYPE *d_arr, size_t size) {
     auto arr = std::vector<GRID_TYPE>(size);
     cudaMemcpy(arr.data(), d_arr, sizeof(GRID_TYPE) * size, cudaMemcpyDefault);
