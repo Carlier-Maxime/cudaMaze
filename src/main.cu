@@ -28,9 +28,10 @@ class MazeCuda : public Maze {
         curandState *d_rngStates;
         bool *d_hWall, *d_vWall, *d_cond;
         const auto ids_size = roundToNextPowerOfTwo(getSize());
+        const auto rand_size = RECOMMENDED_CURAND_STATE_COUNT;
         HANDLE_ERROR(cudaMalloc(&d_hWall, sizeof(bool) * horizontalWall.size()));
         HANDLE_ERROR(cudaMalloc(&d_vWall, sizeof(bool) * verticalWall.size()));
-        HANDLE_ERROR(cudaMalloc(&d_rngStates, sizeof(curandState) * ids_size));
+        HANDLE_ERROR(cudaMalloc(&d_rngStates, sizeof(curandState) * rand_size));
         HANDLE_ERROR(cudaMalloc(&d_pairs, sizeof(GRID_TYPE) * ids_size));
         HANDLE_ERROR(cudaMalloc(&d_ws, sizeof(GRID_TYPE) * ids_size));
         HANDLE_ERROR(cudaMalloc(&d_cond, sizeof(bool) * 1));
@@ -43,7 +44,7 @@ class MazeCuda : public Maze {
         cudaMemcpy(h_hWall, d_hWall, sizeof(char) * horizontalWall.size(), cudaMemcpyDefault);
         cudaMemcpy(h_vWall, d_vWall, sizeof(char) * verticalWall.size(), cudaMemcpyDefault);
         horizontalWall = std::vector<bool>(h_hWall, h_hWall + horizontalWall.size());
-        verticalWall = std::vector<bool>(h_vWall, h_vWall + horizontalWall.size());
+        verticalWall = std::vector<bool>(h_vWall, h_vWall + verticalWall.size());
         delete[] h_hWall;
         delete[] h_vWall;
     }
@@ -79,17 +80,18 @@ public:
         const auto height = getHeight(), width = getWidth();
         const uint32_t pairs_size_real_used = getSize();
         const uint32_t ids_size = roundToNextPowerOfTwo(pairs_size_real_used);
+        const auto rand_size = RECOMMENDED_CURAND_STATE_COUNT;
         auto [d_hWall, d_vWall, d_rngStates, d_pairs, d_ws, d_cond] = allocDataGPU<uint32_t>();
         if (verbose) {
             std::cout << "allocate data GPU, complete in : " << chrono << std::endl;
             chrono.reset();
         }
-        kernelInitCurand<<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(getSeed(), d_rngStates, ids_size);
+        kernelInitCurand<<<GET_MAX_BLOCKS_1D(rand_size), DEFAULT_THREADS_DIMS_1D>>>(getSeed(), d_rngStates, rand_size);
         kernelInitArrayRange1D<uint32_t><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_ws, ids_size, 1, 1);
         kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(horizontalWall.size()), DEFAULT_THREADS_DIMS_1D>>>(d_hWall, horizontalWall.size(), true);
         kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(verticalWall.size()), DEFAULT_THREADS_DIMS_1D>>>(d_vWall, verticalWall.size(), true);
         cudaDeviceSynchronize();
-        kernelRandomArray<<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, d_rngStates, ids_size);
+        kernelRandomArray<<<GET_MAX_BLOCKS_1D(rand_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, d_rngStates, ids_size);
         cudaDeviceSynchronize();
         if (verbose) {
             std::cout << "init intermediate data, complete in : " << chrono << std::endl;
@@ -104,19 +106,15 @@ public:
             std::cout << "shuffle weights, complete in : " << chrono << std::endl;
             chrono.reset();
         }
-        auto bd = dim3(
-            (width / DEFAULT_THREADS_DIMS_2D.x) + (width%DEFAULT_THREADS_DIMS_2D.x ? 1 : 0),
-            (height / DEFAULT_THREADS_DIMS_2D.y) + (height%DEFAULT_THREADS_DIMS_2D.y ? 1 : 0),
-            1);
         bool cond = true;
         size_t nb_step = 0;
         while (cond) {
             std::cout << ++nb_step << '\r';
             kernelResetPairsAndCond<uint32_t><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, ids_size, d_cond);
             cudaDeviceSynchronize();
-            kernelMazePairForBreakWall<<<bd, DEFAULT_THREADS_DIMS_2D>>>(d_pairs, d_ws, d_hWall, d_vWall, d_rngStates, height, width);
+            kernelMazePairForBreakWall<<<RECOMMENDED_CURAND_BLOCK_2D, DEFAULT_THREADS_DIMS_2D>>>(d_pairs, d_ws, d_hWall, d_vWall, d_rngStates, height, width);
             cudaDeviceSynchronize();
-            kernelMazeApplyPairs<<<bd, DEFAULT_THREADS_DIMS_2D>>>(d_pairs, d_ws, height, width, d_cond);
+            kernelMazeApplyPairs<<<GET_MAX_BLOCKS_2D(height, width), DEFAULT_THREADS_DIMS_2D>>>(d_pairs, d_ws, height, width, d_cond);
             cudaDeviceSynchronize();
             cudaMemcpy(&cond, d_cond, sizeof(bool), cudaMemcpyDefault);
         }
