@@ -5,7 +5,7 @@
 
 #if defined(__clang__)
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wredefinition-of-typedef"
+#pragma clang diagnostic ignored "-Wredefinition"
 #endif
 
 class Maze {
