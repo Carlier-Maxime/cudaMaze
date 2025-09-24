@@ -3,11 +3,6 @@
 #include <string>
 #include <vector>
 
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wredefinition"
-#endif
-
 class Maze {
 public:
     Maze(uint16_t height_, uint16_t width_, size_t seed_, bool verbose);
@@ -35,7 +30,3 @@ protected:
 };
 
 #include "Maze.tpp"
-
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
