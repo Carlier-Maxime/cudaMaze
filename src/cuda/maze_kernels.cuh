@@ -1,5 +1,6 @@
 #pragma once
 #include "utils.cuh"
+#include "../mixte/maze_mixte.cuh"
 
 template <typename GRID_TYPE>
 __global__ void kernelResetPairsAndCond(GRID_TYPE *pairs,  const size_t size, bool* cond) {
@@ -64,4 +65,18 @@ __global__ void kernelOneInRealSize(GRID_TYPE *ws, const size_t size, size_t new
     const auto i = d_getArray1DIndex();
     if (i >= size || ws[i] != 1) return;
     swap(ws[i], ws[newIndexForOne]);
+}
+
+template <typename GRID_TYPE>
+__global__ void kernelMazeToGrid(GRID_TYPE *grid, const size_t height, const size_t width, bool* vWall, bool* hWall,
+                                 const size_t wallVerticalSize, const size_t wallHorizontalSize,
+                                 const GRID_TYPE pathValue, const GRID_TYPE wallAngleValue,
+                                 const GRID_TYPE wallVerticalValue, const GRID_TYPE wallHorizontalValue,
+                                 const size_t mazeWidth) {
+    const auto [y, x, i] = d_getArray2DIndices(width);
+    if (y >= height || x >= width) return;
+    grid[i] = getGridElementValueOf_Impl(
+        height, width, y, x, wallVerticalSize, wallHorizontalSize, pathValue,
+        wallAngleValue, wallVerticalValue, wallHorizontalValue, vWall, hWall, mazeWidth
+    );
 }

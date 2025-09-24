@@ -27,12 +27,12 @@ void MazeCuda<GRID_TYPE>::debugWeights(GRID_TYPE* ws) {
 
 template<typename GRID_TYPE>
 void MazeCuda<GRID_TYPE>::moveWallToCPU(const bool* d_vWall, const bool* d_hWall) {
-    const auto h_vWall = new char[verticalWall.size()];
-    const auto h_hWall = new char[horizontalWall.size()];
-    cudaMemcpy(h_vWall, d_vWall, sizeof(char) * verticalWall.size(), cudaMemcpyDefault);
-    cudaMemcpy(h_hWall, d_hWall, sizeof(char) * horizontalWall.size(), cudaMemcpyDefault);
-    verticalWall = std::vector<bool>(h_vWall, h_vWall + verticalWall.size());
-    horizontalWall = std::vector<bool>(h_hWall, h_hWall + horizontalWall.size());
-    delete[] h_vWall;
-    delete[] h_hWall;
+    cudaMemcpy(verticalWall, d_vWall, sizeof(char) * getVWallSize(), cudaMemcpyDefault);
+    cudaMemcpy(horizontalWall, d_hWall, sizeof(char) * getHWallSize(), cudaMemcpyDefault);
+}
+
+template<typename GRID_TYPE>
+void MazeCuda<GRID_TYPE>::moveWallToGPU(bool *d_vWall, bool *d_hWall) const {
+    cudaMemcpy(d_vWall, verticalWall, sizeof(char) * getVWallSize(), cudaMemcpyDefault);
+    cudaMemcpy(d_hWall, horizontalWall, sizeof(char) * getHWallSize(), cudaMemcpyDefault);
 }

@@ -22,8 +22,8 @@ class MazeCuda : public Maze {
         bool *d_vWall, *d_hWall, *d_cond;
         const auto ids_size = roundToNextPowerOfTwo(getSize());
         const auto rand_size = RECOMMENDED_CURAND_STATE_COUNT;
-        HANDLE_ERROR(cudaMalloc(&d_vWall, sizeof(bool) * verticalWall.size()));
-        HANDLE_ERROR(cudaMalloc(&d_hWall, sizeof(bool) * horizontalWall.size()));
+        HANDLE_ERROR(cudaMalloc(&d_vWall, sizeof(bool) * getVWallSize()));
+        HANDLE_ERROR(cudaMalloc(&d_hWall, sizeof(bool) * getHWallSize()));
         HANDLE_ERROR(cudaMalloc(&d_rngStates, sizeof(curandState) * rand_size));
         HANDLE_ERROR(cudaMalloc(&d_pairs, sizeof(GRID_TYPE) * ids_size));
         HANDLE_ERROR(cudaMalloc(&d_ws, sizeof(GRID_TYPE) * ids_size));
@@ -32,6 +32,7 @@ class MazeCuda : public Maze {
     }
 
     void moveWallToCPU(const bool* d_vWall, const bool* d_hWall);
+    void moveWallToGPU(bool* d_vWall, bool* d_hWall) const;
     void debugWeights(GRID_TYPE* ws);
     void debugPairs(GRID_TYPE* pairs);
 
@@ -52,8 +53,8 @@ public:
         }
         kernelInitCurand<<<GET_MAX_BLOCKS_1D(rand_size), DEFAULT_THREADS_DIMS_1D>>>(getSeed(), d_rngStates, rand_size);
         kernelInitArrayRange1D<uint32_t><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_ws, ids_size, 1, 1);
-        kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(verticalWall.size()), DEFAULT_THREADS_DIMS_1D>>>(d_vWall, verticalWall.size(), true);
-        kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(horizontalWall.size()), DEFAULT_THREADS_DIMS_1D>>>(d_hWall, horizontalWall.size(), true);
+        kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(getVWallSize()), DEFAULT_THREADS_DIMS_1D>>>(d_vWall, getVWallSize(), true);
+        kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(getHWallSize()), DEFAULT_THREADS_DIMS_1D>>>(d_hWall, getHWallSize(), true);
         cudaDeviceSynchronize();
         kernelRandomArray<<<GET_MAX_BLOCKS_1D(rand_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, d_rngStates, ids_size);
         cudaDeviceSynchronize();
@@ -97,6 +98,26 @@ public:
         if (verbose) std::cout << "maze make (" << height << 'x' << width << ") in : " << chronoAll << std::endl;
     }
 
+    [[nodiscard]] std::vector<char> toGridChar(const char pathValue, const char wallAngleValue, const char wallVerticalValue,
+        const char wallHorizontalValue, const size_t wallVerticalSize, const size_t wallHorizontalSize) const override {
+        bool *d_vWall, *d_hWall;
+        HANDLE_ERROR(cudaMalloc(&d_vWall, sizeof(bool) * getVWallSize()));
+        HANDLE_ERROR(cudaMalloc(&d_hWall, sizeof(bool) * getHWallSize()));
+        moveWallToGPU(d_vWall, d_hWall);
+        char* d_grid;
+        const size_t h = getGridHeight(wallVerticalSize), w = getGridWidth(wallHorizontalSize);
+        HANDLE_ERROR(cudaMalloc(&d_grid, sizeof(char) * h * w));
+        kernelMazeToGrid<<<GET_MAX_BLOCKS_2D(h, w), DEFAULT_THREADS_DIMS_2D>>>(
+            d_grid, h, w, d_vWall, d_hWall, wallVerticalSize, wallHorizontalSize,
+            pathValue, wallAngleValue, wallVerticalValue, wallHorizontalValue, getWidth());
+        std::vector<char> grid(h * w);
+        cudaDeviceSynchronize();
+        HANDLE_ERROR(cudaFree(d_hWall));
+        HANDLE_ERROR(cudaFree(d_vWall));
+        cudaMemcpy(grid.data(), d_grid, sizeof(char) * h * w, cudaMemcpyDefault);
+        HANDLE_ERROR(cudaFree(d_grid));
+        return grid;
+    }
     ~MazeCuda() override = default;
 };
 
