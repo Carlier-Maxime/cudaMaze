@@ -22,7 +22,7 @@ Maze::Maze(const uint16_t height_, const uint16_t width_): Maze(height_, width_,
 void Maze::toPNG(const std::string& path) const {
     if (!stbi_write_png(
         path.c_str(), static_cast<int>(getGridWidth()), static_cast<int>(getGridHeight()),
-        1, toGrid<char>(0, 255).data(), static_cast<int>(getGridWidth()))
+        1, toGrid<char>(-1, 0, 0, 0, 1, 1).data(), static_cast<int>(getGridWidth()))
     ) throw std::runtime_error("Failed to write image");
 }
 
@@ -56,7 +56,7 @@ size_t Maze::getSeed() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Maze& maze) {
-    const auto grid = maze.toGrid('#', ' ');
+    const auto grid = maze.toGrid(' ', '+', '|', '-', 1, 1);
     os << std::endl;
     for (size_t i = 0; i < maze.getGridHeight(); i++) {
         for (size_t j = 0; j < maze.getGridWidth(); j++) {
