@@ -9,8 +9,8 @@
 #include "../third_party/stb_image_write.h"
 
 Maze::Maze(const uint16_t height_, const uint16_t width_, const size_t seed_, const bool verbose) :
-        height(height_), width(width_), seed(seed_), horizontalWall((width-1)*height), verticalWall((height-1)*width) {
-    if (verbose) std::cout << "Maze: " << height << "x" << width << " with seed " << seed << std::endl;
+        height(height_), width(width_), seed(seed_), verticalWall((width-1)*height), horizontalWall((height-1)*width) {
+    if (verbose) std::cout << "Maze: " << width << 'x' << height << " with seed " << seed << std::endl;
 }
 
 Maze::Maze(const uint16_t height_, const uint16_t width_, const size_t seed_): Maze(height_, width_, seed_, false){}

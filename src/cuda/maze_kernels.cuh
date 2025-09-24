@@ -10,7 +10,7 @@ __global__ void kernelResetPairsAndCond(GRID_TYPE *pairs,  const size_t size, bo
 
 template <typename GRID_TYPE>
 __device__ void dMazePairForBreakWall(
-            GRID_TYPE *pairs, GRID_TYPE *ws, bool *hWall, bool *vWall,
+            GRID_TYPE *pairs, GRID_TYPE *ws, bool *vWall, bool *hWall,
             curandState *rng_states, const size_t ir,
             const size_t height, const size_t width, const size_t y1, const size_t x1) {
     uint32_t i1 = y1 * width + x1;
@@ -26,25 +26,25 @@ __device__ void dMazePairForBreakWall(
     if (ws[i2] < ws[i1] && atomicCAS(pairs+ws[i1]-1, 0, ws[i2]) != 0) return;
     bool* wall;
     size_t wIndex;
-    if (ay != 0) {
+    if (ay == 0) {
         wall = vWall;
-        wIndex = (y1-(ay<0))*width+x1;
+        wIndex = y1*(width-1)+(x1-(ax<0));
     } else {
         wall = hWall;
-        wIndex = y1*(width-1)+(x1-(ax<0));
+        wIndex = (y1-(ay<0))*width+x1;
     }
     wall[wIndex] = false;
 }
 
 template <typename GRID_TYPE>
-__global__ void kernelMazePairForBreakWall(GRID_TYPE *pairs, GRID_TYPE *ws, bool *hWall, bool *vWall, curandState *rng_states, const size_t height, const size_t width) {
+__global__ void kernelMazePairForBreakWall(GRID_TYPE *pairs, GRID_TYPE *ws, bool *vWall, bool *hWall, curandState *rng_states, const size_t height, const size_t width) {
     const auto w = dCeilDiv<size_t>(width, gridDim.x * blockDim.x);
     const auto h = dCeilDiv<size_t>(height, gridDim.y * blockDim.y);
     const auto [y, x, ir] = d_getArray2DIndices(gridDim.x * blockDim.x);
     for (auto i=0; i<h; ++i) {
         for (auto j=0; j<w; ++j) {
             const auto y1 = y*h+i, x1 = x*w+j;
-            dMazePairForBreakWall(pairs, ws, hWall, vWall, rng_states, ir, height, width, y1, x1);
+            dMazePairForBreakWall(pairs, ws, vWall, hWall, rng_states, ir, height, width, y1, x1);
         }
     }
 }

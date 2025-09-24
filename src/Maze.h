@@ -12,8 +12,8 @@ public:
     virtual ~Maze() = default;
     template <typename GRID_TYPE>
     std::vector<GRID_TYPE> toGrid(
-        GRID_TYPE pathValue, GRID_TYPE wallAngleValue, GRID_TYPE wallHorizontalValue,
-        GRID_TYPE wallVerticalValue, size_t wallHorizontalSize, size_t wallVerticalSize) const;
+        GRID_TYPE pathValue, GRID_TYPE wallAngleValue, GRID_TYPE wallVerticalValue,
+        GRID_TYPE wallHorizontalValue, size_t wallVerticalSize, size_t wallHorizontalSize) const;
     void toPNG(const std::string& path) const;
     [[nodiscard]] size_t getIndexForOne() const;
     [[nodiscard]] size_t getGridHeight() const;
@@ -27,8 +27,7 @@ private:
     uint16_t height, width;
     size_t seed;
 protected:
-    std::vector<bool> horizontalWall;
-    std::vector<bool> verticalWall;
+    std::vector<bool> verticalWall, horizontalWall;
 };
 
 #include "Maze.tpp"
