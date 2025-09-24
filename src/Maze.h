@@ -29,6 +29,9 @@ private:
     size_t seed;
 protected:
     std::vector<bool> verticalWall, horizontalWall;
+    template <typename T>
+    T getGridElementValue(size_t h, size_t w, size_t i, size_t j, size_t wallVerticalSize, size_t wallHorizontalSize,
+                          T pathValue, T wallAngleValue, T wallVerticalValue, T wallHorizontalValue) const;
 };
 
 #include "Maze.tpp"
