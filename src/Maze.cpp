@@ -41,7 +41,7 @@ size_t Maze::getGridWidth(const size_t horizontalWallSize) const {
 }
 
 size_t Maze::getGridSize(const size_t size, const size_t wallSize) {
-    return size+size*wallSize+1;
+    return size+size*wallSize+2*wallSize-1;
 }
 
 size_t Maze::getSize() const {

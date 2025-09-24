@@ -13,14 +13,16 @@ std::vector<GRID_TYPE> Maze::toGrid(
     std::vector<GRID_TYPE> grid(gh*gw);
     size_t gy = 0;
     for (size_t i = 0; i < h; ++i) {
-        for (size_t k = 0; k < (i&1 ? wallVerticalSize : 1); ++k) {
+        const bool yLimit = i==0 || i==h-1;
+        for (size_t k = 0; k < (i&1 || yLimit ? wallVerticalSize : 1); ++k) {
             size_t gx = 0;
             for (size_t j = 0; j < w; ++j) {
-                for (size_t l = 0; l < (j&1 ? wallHorizontalSize : 1); ++l) {
+                const bool xLimit = j==0 || j==w-1;
+                for (size_t l = 0; l < (j&1 || xLimit ? wallHorizontalSize : 1); ++l) {
                     const auto index = gy * gw + gx;
                     if (!(i&1) && !(j&1)) grid[index] = wallAngleValue;
-                    else if (i==0 || i==h-1) grid[index] = wallHorizontalValue;
-                    else if (j==0 || j==w-1) grid[index] = wallVerticalValue;
+                    else if (yLimit) grid[index] = wallHorizontalValue;
+                    else if (xLimit) grid[index] = wallVerticalValue;
                     else if (i&1 && j&1) grid[index] = pathValue;
                     else {
                         const auto y = (i-(i&1))>>1, x = (j-(j&1))>>1;
@@ -33,9 +35,11 @@ std::vector<GRID_TYPE> Maze::toGrid(
             ++gy;
         }
     }
-    for (size_t i=1; i<=wallVerticalSize; ++i) {
-        grid[i*gw] = pathValue;
-        grid[gh*gw-(i*gw+1)] = pathValue;
+    for (size_t i=0; i<wallVerticalSize; ++i) {
+        for (size_t j=0; j<wallHorizontalSize; ++j) {
+            grid[(wallVerticalSize+i)*gw+j] = pathValue;
+            grid[gh*gw-((wallVerticalSize+i)*gw+j+1)] = pathValue;
+        }
     }
     return grid;
 }
