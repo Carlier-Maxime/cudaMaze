@@ -14,7 +14,7 @@ int main() {
     std::cin >> h;
     const MazeCuda<uint32_t> maze(h, w, true);
     const auto chrono = Chronometer();
-    maze.toPNG("maze.png");
+    maze.toPNG("maze.png", 3, 3);
     std::cout << "Save Maze to PNG in : " << chrono << std::endl;
     return EXIT_SUCCESS;
 }
