@@ -30,7 +30,7 @@ void MazeBuilder<GRID_TYPE, BackendCUDA>::allocData() {
 template <UnsignedIntegral GRID_TYPE>
 void MazeBuilder<GRID_TYPE, BackendCUDA>::initData() {
     kernelInitCurand<<<GET_MAX_BLOCKS_1D(rand_size), DEFAULT_THREADS_DIMS_1D>>>(maze->getSeed(), d_rngStates, rand_size);
-    kernelInitArrayRange1D<uint32_t><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_ws, ids_size, 1, 1);
+    kernelInitArrayRange1D<GRID_TYPE><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_ws, ids_size, 1, 1);
     kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(maze->getVWallSize()), DEFAULT_THREADS_DIMS_1D>>>(d_vWall, maze->getVWallSize(), true);
     kernelInitArray1D<bool><<<GET_MAX_BLOCKS_1D(maze->getHWallSize()), DEFAULT_THREADS_DIMS_1D>>>(d_hWall, maze->getHWallSize(), true);
     cudaDeviceSynchronize();
@@ -40,7 +40,7 @@ void MazeBuilder<GRID_TYPE, BackendCUDA>::initData() {
 
 template <UnsignedIntegral GRID_TYPE>
 void MazeBuilder<GRID_TYPE, BackendCUDA>::shuffleWeights() {
-    cudaBitonicSort<uint32_t>(d_ws, d_pairs, ids_size);
+    cudaBitonicSort<GRID_TYPE>(d_ws, d_pairs, ids_size);
     const auto newIndexForOne = getIndexForOne();
     cudaDeviceSynchronize();
     kernelOneInRealSize<<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_ws, ids_size, newIndexForOne);
@@ -50,7 +50,7 @@ void MazeBuilder<GRID_TYPE, BackendCUDA>::shuffleWeights() {
 template <UnsignedIntegral GRID_TYPE>
 void MazeBuilder<GRID_TYPE, BackendCUDA>::breakWallsStep(bool& cond) {
     const auto h = maze->getHeight(), w = maze->getWidth();
-    kernelResetPairsAndCond<uint32_t><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, ids_size, d_cond);
+    kernelResetPairsAndCond<GRID_TYPE><<<GET_MAX_BLOCKS_1D(ids_size), DEFAULT_THREADS_DIMS_1D>>>(d_pairs, ids_size, d_cond);
     cudaDeviceSynchronize();
     kernelMazePairForBreakWall<<<RECOMMENDED_CURAND_BLOCK_2D, DEFAULT_THREADS_DIMS_2D>>>(d_pairs, d_ws, d_vWall, d_hWall, d_rngStates, h, w);
     cudaDeviceSynchronize();

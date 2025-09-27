@@ -1,9 +1,9 @@
 #pragma once
 
 #include <concepts>
-#include <cstdint>
+#include <cstddef>
 
-uint32_t roundToNextPowerOfTwo(uint32_t a);
+size_t roundToNextPowerOfTwo(size_t a);
 
 template<typename T>
 T ceilDiv(T a, T b) {

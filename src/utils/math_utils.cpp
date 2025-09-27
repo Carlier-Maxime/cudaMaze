@@ -1,6 +1,6 @@
 #include "math_utils.hpp"
 
-uint32_t roundToNextPowerOfTwo(uint32_t a) {
+size_t roundToNextPowerOfTwo(size_t a) {
     if (a == 0) return 0;
     a--;
     a |= a >> 1;

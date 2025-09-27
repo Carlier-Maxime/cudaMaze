@@ -10,4 +10,8 @@ const auto RECOMMENDED_CURAND_STATE_COUNT = RECOMMENDED_CURAND_BLOCK_1D * DEVICE
 const auto RECOMMENDED_CURAND_BLOCK_2D = dim3(RECOMMENDED_CURAND_BLOCK_1D, 1, 1);
 
 __global__ void kernelInitCurand(size_t seed, curandState *states, size_t size);
-__global__ void kernelRandomArray(uint32_t *arr, curandState *states, size_t size);
+
+template <UnsignedIntegral U>
+__global__ void kernelRandomArray(U *arr, curandState *states, size_t size);
+
+#include "random.tpp.cuh"

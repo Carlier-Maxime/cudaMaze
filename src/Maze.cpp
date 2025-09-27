@@ -45,11 +45,11 @@ size_t Maze::getSize() const {
     return getHeight() * getWidth();
 }
 
-uint16_t Maze::getHeight() const {
+size_t Maze::getHeight() const {
     return height;
 }
 
-uint16_t Maze::getWidth() const {
+size_t Maze::getWidth() const {
     return width;
 }
 

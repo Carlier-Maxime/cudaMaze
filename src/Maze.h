@@ -10,7 +10,7 @@
 class Maze final {
 public:
     template <Backend_T Backend>
-    static Maze make(uint16_t height_, uint16_t width_, size_t seed_, bool verbose);
+    static Maze make(size_t height_, size_t width_, size_t seed_, bool verbose);
     ~Maze();
     template <Backend_T Backend>
     void toPNG(const std::string& path) const;
@@ -22,14 +22,14 @@ public:
     [[nodiscard]] size_t getVWallSize() const;
     [[nodiscard]] size_t getHWallSize() const;
     [[nodiscard]] size_t getSize() const;
-    [[nodiscard]] uint16_t getHeight() const;
-    [[nodiscard]] uint16_t getWidth() const;
+    [[nodiscard]] size_t getHeight() const;
+    [[nodiscard]] size_t getWidth() const;
     [[nodiscard]] size_t getSeed() const;
     friend std::ostream& operator<<(std::ostream& os, const Maze& maze);
 private:
     Maze();
     static size_t getGridSize(size_t size, size_t wallSize);
-    uint16_t height, width;
+    size_t height, width;
     size_t seed;
     template <UnsignedIntegral GRID_TYPE, Backend_T Backend>
     friend class MazeBuilder;

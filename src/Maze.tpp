@@ -4,10 +4,9 @@
 
 #include "MazeBuilder.h"
 #include "MazeGridBuilderCPU.h"
-#include "mixte/maze_mixte.cuh"
 
 template<Backend_T Backend>
-Maze Maze::make(uint16_t height_, uint16_t width_, size_t seed_, const bool verbose) {
+Maze Maze::make(const size_t height_, const size_t width_, const size_t seed_, const bool verbose) {
     Maze maze;
     maze.height = height_;
     maze.width = width_;
@@ -15,7 +14,14 @@ Maze Maze::make(uint16_t height_, uint16_t width_, size_t seed_, const bool verb
     maze.verticalWall = {static_cast<bool *>(malloc(maze.getVWallSize()))};
     maze.horizontalWall = {static_cast<bool *>(malloc(maze.getHWallSize()))};
     if (verbose) std::cout << "Maze: " << maze.width << 'x' << maze.height << " with seed " << maze.seed << std::endl;
-    MazeBuilder<uint32_t, Backend>().setVerbosity(verbose).build(&maze);
+    const auto max = roundToNextPowerOfTwo(maze.getSize());
+    if (static_cast<size_t>(std::numeric_limits<uint16_t>::max()) > max)
+        MazeBuilder<uint16_t, Backend>().setVerbosity(verbose).build(&maze);
+    else if (static_cast<size_t>(std::numeric_limits<uint32_t>::max()) > max)
+        MazeBuilder<uint32_t, Backend>().setVerbosity(verbose).build(&maze);
+    else if (std::numeric_limits<uint64_t>::max() > max)
+        MazeBuilder<uint32_t, Backend>().setVerbosity(verbose).build(&maze);
+    else throw std::runtime_error("Maze::make() failed: size is too big");
     return maze;
 }
 
