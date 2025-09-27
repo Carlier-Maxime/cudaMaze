@@ -4,7 +4,8 @@
 #include <ostream>
 
 #include "utils/chronometer.hpp"
-#include "cuda/maze.cuh"
+#include "cuda/mazeBuilderCuda.cuh"
+#include "cuda/mazeGridBuilderCuda.cuh"
 
 int main() {
     uint16_t h, w;
@@ -12,9 +13,10 @@ int main() {
     std::cin >> w;
     std::cout << "height : ";
     std::cin >> h;
-    const MazeCuda<uint32_t> maze(h, w, true);
+    auto maze = Maze::make<BackendCUDA>(h, w, time(nullptr), true);
     const auto chrono = Chronometer();
-    maze.toPNG("maze.png");
+    maze.toPNG<BackendCUDA>("maze.png");
     std::cout << "Save Maze to PNG in : " << chrono << std::endl;
+    std::cout << maze << std::endl;
     return EXIT_SUCCESS;
 }

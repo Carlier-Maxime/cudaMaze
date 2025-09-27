@@ -1,46 +1,38 @@
 #pragma once
 
-#include "Maze.h"
+#include <iostream>
+
+#include "MazeBuilder.h"
+#include "MazeGridBuilderCPU.h"
 #include "mixte/maze_mixte.cuh"
 
-template <typename GRID_TYPE>
-std::vector<GRID_TYPE> Maze::toGrid(
-            const GRID_TYPE pathValue, const GRID_TYPE wallAngleValue, const GRID_TYPE wallVerticalValue,
-            const GRID_TYPE wallHorizontalValue, const size_t wallVerticalSize, const size_t wallHorizontalSize) const {
-    const auto h = getGridHeight(wallVerticalSize);
-    const auto w = getGridWidth(wallHorizontalSize);
-    std::vector<GRID_TYPE> grid(h*w);
-    for (size_t i = 0; i < h; ++i) {
-        for (size_t j = 0; j < w; ++j) {
-            const auto index = i * w + j;
-            grid[index] = getGridElementValue(
-                h, w, i, j,wallVerticalSize, wallHorizontalSize,
-                pathValue, wallAngleValue, wallVerticalValue, wallHorizontalValue
-            );
-        }
-    }
-    return grid;
+template<Backend_T Backend>
+Maze Maze::make(uint16_t height_, uint16_t width_, size_t seed_, const bool verbose) {
+    Maze maze;
+    maze.height = height_;
+    maze.width = width_;
+    maze.seed = seed_;
+    maze.verticalWall = {static_cast<bool *>(malloc(maze.getVWallSize()))};
+    maze.horizontalWall = {static_cast<bool *>(malloc(maze.getHWallSize()))};
+    if (verbose) std::cout << "Maze: " << maze.width << 'x' << maze.height << " with seed " << maze.seed << std::endl;
+    MazeBuilder<uint32_t, Backend>().setVerbosity(verbose).build(&maze);
+    return maze;
 }
 
-template<typename T>
-T Maze::getGridElementValue(const size_t h, const size_t w, const size_t i, const size_t j,
-                            const size_t wallVerticalSize, const size_t wallHorizontalSize,
-                            const T pathValue, const T wallAngleValue, const T wallVerticalValue,
-                            const T wallHorizontalValue) const {
-    return getGridElementValueOf(
-        h, w, i, j, wallVerticalSize, wallHorizontalSize, pathValue, wallAngleValue,
-        wallVerticalValue, wallHorizontalValue, verticalWall, horizontalWall, getWidth()
-    );
+template <Backend_T Backend>
+void Maze::toPNG(const std::string &path) const {
+    toPNG<Backend>(path, 3, 3);
 }
 
-template<typename T>
-T Maze::getGridElementValueOf(const size_t h, const size_t w, const size_t i, const size_t j,
-                            const size_t wallVerticalSize, const size_t wallHorizontalSize, T pathValue,
-                            T wallAngleValue, T wallVerticalValue, T wallHorizontalValue,
-                            const bool *vWall, const bool *hWall, const size_t mazeWidth) {
-    return getGridElementValueOf_Impl(
-        h, w, i, j, wallVerticalSize, wallHorizontalSize, pathValue,
-        wallAngleValue, wallVerticalValue, wallHorizontalValue,
-        vWall, hWall, mazeWidth
-    );
+template <Backend_T Backend>
+void Maze::toPNG(const std::string& path, const size_t verticalWallSize, const size_t horizontalWallSize) const {
+    const auto grid = MazeGridBuilder<char, Backend>()
+        .setPathValue(-1)
+        .setWallAngleValue(0)
+        .setWallVerticalValue(0)
+        .setWallHorizontalValue(0)
+        .setWallVerticalSize(verticalWallSize)
+        .setWallHorizontalSize(horizontalWallSize)
+        .build(*this);
+    toPNG(path, grid, verticalWallSize, horizontalWallSize);
 }
