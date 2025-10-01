@@ -33,7 +33,7 @@ private:
     size_t seed;
     template <UnsignedIntegral GRID_TYPE, Backend_T Backend>
     friend class MazeBuilder;
-    template <typename GRID_TYPE, Backend_T Backend>
+    template <UnsignedIntegral U, typename GRID_TYPE, Backend_T Backend>
     friend class MazeGridBuilder;
     template <UnsignedIntegral GRID_TYPE, Backend_T Backend>
     friend class MazeResolver;

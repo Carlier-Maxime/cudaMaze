@@ -32,7 +32,7 @@ void Maze::toPNG(const std::string &path) const {
 
 template <Backend_T Backend>
 void Maze::toPNG(const std::string& path, const size_t verticalWallSize, const size_t horizontalWallSize) const {
-    const auto grid = MazeGridBuilder<char, Backend>()
+    const auto grid = MazeGridBuilder<size_t, char, Backend>()
         .setPathValue(-1)
         .setWallAngleValue(0)
         .setWallVerticalValue(0)

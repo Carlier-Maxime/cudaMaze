@@ -67,16 +67,16 @@ __global__ void kernelOneInRealSize(GRID_TYPE *ws, const size_t size, size_t new
     swap(ws[i], ws[newIndexForOne]);
 }
 
-template <typename GRID_TYPE>
-__global__ void kernelMazeToGrid(GRID_TYPE *grid, const size_t height, const size_t width, bool* vWall, bool* hWall,
+template <UnsignedIntegral U, typename T>
+__global__ void kernelMazeToGrid(T *grid, const size_t height, const size_t width, bool* vWall, bool* hWall,
                                  const size_t wallVerticalSize, const size_t wallHorizontalSize,
-                                 const GRID_TYPE pathValue, const GRID_TYPE wallAngleValue,
-                                 const GRID_TYPE wallVerticalValue, const GRID_TYPE wallHorizontalValue,
+                                 const U *pathValueIndices, const T *pathValues, const U maxValueIndex,
+                                 const T wallAngleValue, const T wallVerticalValue, const T wallHorizontalValue,
                                  const size_t mazeWidth) {
     const auto [y, x, i] = d_getArray2DIndices(width);
     if (y >= height || x >= width) return;
     grid[i] = getGridElementValueOf_Impl(
-        height, width, y, x, wallVerticalSize, wallHorizontalSize, pathValue,
+        height, width, y, x, wallVerticalSize, wallHorizontalSize, pathValueIndices, pathValues, maxValueIndex,
         wallAngleValue, wallVerticalValue, wallHorizontalValue, vWall, hWall, mazeWidth
     );
 }

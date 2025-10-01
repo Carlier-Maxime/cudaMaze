@@ -1,16 +1,25 @@
 #pragma once
 
 #include <vector>
+#include "utils/math_utils.hpp"
 
 class Maze;
 
-template <typename GRID_TYPE>
+template <UnsignedIntegral U, typename GRID_TYPE>
 class MazeGridBuilderBase {
 public:
     virtual ~MazeGridBuilderBase() = default;
 
     MazeGridBuilderBase& setPathValue(const GRID_TYPE &pathValue_) {
-        this->pathValue = pathValue_;
+        pathValueIndices.clear();
+        pathValues.clear();
+        pathValues.emplace_back(pathValue_);
+        return *this;
+    }
+
+    MazeGridBuilderBase& setPathValues(const std::vector<U> indices, const std::vector<GRID_TYPE> values) {
+        pathValueIndices = indices;
+        pathValues = values;
         return *this;
     }
 
@@ -41,6 +50,8 @@ public:
 
     [[nodiscard]] virtual std::vector<GRID_TYPE> build(const Maze& maze) const = 0;
 protected:
-    GRID_TYPE pathValue = 0, wallAngleValue = 0, wallVerticalValue = 0, wallHorizontalValue = 0;
+    std::vector<U> pathValueIndices;
+    std::vector<GRID_TYPE> pathValues;
+    GRID_TYPE wallAngleValue = 0, wallVerticalValue = 0, wallHorizontalValue = 0;
     size_t wallVerticalSize = 0, wallHorizontalSize = 0;
 };

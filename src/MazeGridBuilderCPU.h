@@ -2,8 +2,8 @@
 
 #include "MazeGridBuilder.h"
 
-template <typename GRID_TYPE>
-class MazeGridBuilder<GRID_TYPE, BackendCPU> : public MazeGridBuilderBase<GRID_TYPE> {
+template <UnsignedIntegral U, typename GRID_TYPE>
+class MazeGridBuilder<U, GRID_TYPE, BackendCPU> : public MazeGridBuilderBase<U, GRID_TYPE> {
 public:
     [[nodiscard]] std::vector<GRID_TYPE> build(const Maze& maze) const override;
 };

@@ -58,7 +58,7 @@ size_t Maze::getSeed() const {
 }
 
 std::ostream& operator<<(std::ostream& os, const Maze& maze) {
-    const auto grid = MazeGridBuilder<char, BackendCPU>()
+    const auto grid = MazeGridBuilder<size_t, char, BackendCPU>()
         .setPathValue(' ')
         .setWallAngleValue('+')
         .setWallVerticalValue('|')
