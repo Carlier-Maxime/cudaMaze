@@ -12,3 +12,9 @@ T ceilDiv(T a, T b) {
 
 template <typename T>
 concept UnsignedIntegral = std::unsigned_integral<T>;
+
+template<UnsignedIntegral U>
+struct Position {
+    U x;
+    U y;
+};

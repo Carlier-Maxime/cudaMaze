@@ -5,6 +5,7 @@
 #include "sort.cuh"
 #include "maze_kernels.cuh"
 #include "../Maze.h"
+#include "../utils/debug.hpp"
 
 template <UnsignedIntegral GRID_TYPE>
 void MazeBuilder<GRID_TYPE, BackendCUDA>::checkParam() {
@@ -87,15 +88,5 @@ void MazeBuilder<GRID_TYPE, BackendCUDA>::debugPairs() {
 template<UnsignedIntegral GRID_TYPE>
 void MazeBuilder<GRID_TYPE, BackendCUDA>::debugWeights() {
     auto arr = cudaArrayToHost(d_ws, maze->getSize());
-    uint32_t w=1;
-    for (uint32_t c=10, t=roundToNextPowerOfTwo(maze->getSize()); t>c; w++, c*=10){}
-    std::cout << std::endl;
-    for (auto i=0; i<maze->getHeight(); ++i) {
-        std::cout << '|';
-        for (auto j=0; j<maze->getWidth(); ++j) {
-            std::cout << std::setw(static_cast<int>(w)) << std::setfill(' ') << arr[i*maze->getWidth()+j] << '|';
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
+    debugArray2D(arr, maze->getWidth(), maze->getHeight(), roundToNextPowerOfTwo(maze->getSize()));
 }

@@ -80,3 +80,26 @@ __global__ void kernelMazeToGrid(GRID_TYPE *grid, const size_t height, const siz
         wallAngleValue, wallVerticalValue, wallHorizontalValue, vWall, hWall, mazeWidth
     );
 }
+
+template <typename GRID_TYPE>
+__global__ void kernelMazeBFS(GRID_TYPE *grid, const size_t height, const size_t width, bool* vWall, bool* hWall,
+                              const Position<GRID_TYPE> start, const Position<GRID_TYPE> end,
+                              const bool stopWhenPathFound, bool* cond_ret) {
+    const auto [y, x, i] = d_getArray2DIndices(width);
+    if (y >= height || x >= width) return;
+    if (grid[i] == 0) {
+        if (y == end.y && x == end.x) grid[i] = 1;
+        if (stopWhenPathFound) {
+            if (y == start.y && x == start.x) *cond_ret = true;
+        } else *cond_ret = true;
+        return;
+    }
+    GRID_TYPE vWallIndex = y*(width-1)+x;
+    GRID_TYPE hWallIndex = y*width+x;
+    GRID_TYPE vwl = (width-1)*height;
+    GRID_TYPE hwl = (height-1)*width;
+    if (x<width-1 && vWallIndex < vwl && !vWall[vWallIndex] && grid[i+1] == 0) grid[i+1] = grid[i]+1;
+    if (x>0 && vWallIndex > 0 && !vWall[vWallIndex-1] && grid[i-1] == 0) grid[i-1] = grid[i]+1;
+    if (y<height-1 && hWallIndex < hwl && !hWall[hWallIndex] && grid[i+width] == 0) grid[i+width] = grid[i]+1;
+    if (y>0 && hWallIndex > 0 && !hWall[hWallIndex-width] && grid[i-width] == 0) grid[i-width] = grid[i]+1;
+}
