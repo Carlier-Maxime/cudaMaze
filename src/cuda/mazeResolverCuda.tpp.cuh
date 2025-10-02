@@ -16,13 +16,14 @@ void MazeResolver<GRID_TYPE, BackendCUDA>::resolve(const Maze& maze, MazeSolutio
     HANDLE_ERROR(cudaMalloc(&cond, sizeof(bool)));
     bool h_cond = true;
     cudaDeviceSynchronize();
-    GRID_TYPE maxDistance = 0;
+    GRID_TYPE maxDistance = 1;
+    cudaMemcpy(ws+solution.end.y*maze.getWidth()+solution.end.x, &maxDistance, sizeof(GRID_TYPE), cudaMemcpyDefault);
     while (h_cond) {
         h_cond = false;
         cudaMemcpy(cond, &h_cond, sizeof(bool), cudaMemcpyDefault);
         kernelMazeBFS<GRID_TYPE><<<GET_MAX_BLOCKS_2D(maze.getHeight(), maze.getWidth()), DEFAULT_THREADS_DIMS_2D>>>(
             ws, maze.getHeight(), maze.getWidth(), vWall, hWall,
-            solution.start, solution.end, solution.stopWhenPathFound, cond, maxDistance
+            solution.start, solution.stopWhenPathFound, cond, maxDistance
         );
         cudaDeviceSynchronize();
         cudaMemcpy(&h_cond, cond, sizeof(bool), cudaMemcpyDefault);

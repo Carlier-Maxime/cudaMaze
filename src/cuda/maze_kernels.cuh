@@ -82,16 +82,14 @@ __global__ void kernelMazeToGrid(T *grid, const size_t height, const size_t widt
 }
 
 template <typename GRID_TYPE>
-__global__ void kernelMazeBFS(GRID_TYPE *grid, const size_t height, const size_t width, bool* vWall, bool* hWall,
-                              const Position<GRID_TYPE> start, const Position<GRID_TYPE> end,
-                              const bool stopWhenPathFound, bool* cond_ret, GRID_TYPE step) {
+__global__ void kernelMazeBFS(GRID_TYPE* __restrict__ grid, const size_t height, const size_t width,
+                              const bool* __restrict__ vWall, const bool* __restrict__ hWall,
+                              const Position<GRID_TYPE> start, const bool stopWhenPathFound,
+                              bool* __restrict__ cond_ret, GRID_TYPE step) {
     const auto [y, x, i] = d_getArray2DIndices(width);
     if (y >= height || x >= width) return;
     if (grid[i] == 0) {
-        if (y == end.y && x == end.x) grid[i] = 1;
-        if (stopWhenPathFound) {
-            if (y == start.y && x == start.x) *cond_ret = true;
-        } else *cond_ret = true;
+        if (!stopWhenPathFound || (y == start.y && x == start.x)) *cond_ret = true;
         return;
     }
     if (grid[i] != step) return;
