@@ -16,20 +16,23 @@ void MazeResolver<GRID_TYPE, BackendCUDA>::resolve(const Maze& maze, MazeSolutio
     HANDLE_ERROR(cudaMalloc(&cond, sizeof(bool)));
     bool h_cond = true;
     cudaDeviceSynchronize();
+    GRID_TYPE maxDistance = 0;
     while (h_cond) {
         h_cond = false;
         cudaMemcpy(cond, &h_cond, sizeof(bool), cudaMemcpyDefault);
-        kernelMazeBFS<<<GET_MAX_BLOCKS_2D(maze.getHeight(), maze.getWidth()), DEFAULT_THREADS_DIMS_2D>>>(
+        kernelMazeBFS<GRID_TYPE><<<GET_MAX_BLOCKS_2D(maze.getHeight(), maze.getWidth()), DEFAULT_THREADS_DIMS_2D>>>(
             ws, maze.getHeight(), maze.getWidth(), vWall, hWall,
-            solution.start, solution.end, solution.stopWhenPathFound, cond
+            solution.start, solution.end, solution.stopWhenPathFound, cond, maxDistance
         );
         cudaDeviceSynchronize();
         cudaMemcpy(&h_cond, cond, sizeof(bool), cudaMemcpyDefault);
+        ++maxDistance;
     }
+    solution.maxDistance = maxDistance;
     HANDLE_ERROR(cudaFree(cond));
     HANDLE_ERROR(cudaFree(hWall));
     HANDLE_ERROR(cudaFree(vWall));
-    solution.distanceToEnd.reserve(maze.getSize());
+    solution.distanceToEnd.resize(maze.getSize());
     cudaMemcpy(solution.distanceToEnd.data(), ws, sizeof(GRID_TYPE) * maze.getSize(), cudaMemcpyDefault);
     HANDLE_ERROR(cudaFree(ws));
 }

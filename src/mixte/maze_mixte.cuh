@@ -19,8 +19,8 @@ HDI T getGridElementValueOf_Impl(const size_t h, const size_t w, const size_t i,
     const bool input = i<2*wallVerticalSize && j<wallHorizontalSize;
     const bool output = i>=h-2*wallVerticalSize && j>=w-wallHorizontalSize;
     if (vBorder) {
-        if (input) return pathValues[0];
-        if (output) return pathValues[maxPathValueIndex];
+        if (input) return pathValueIndices ? pathValues[pathValueIndices[0]] : pathValues[maxPathValueIndex];
+        if (output) return pathValues[0];
         return wallVerticalValue;
     }
     const size_t y = (i-wallVerticalSize)/(wallVerticalSize+1);

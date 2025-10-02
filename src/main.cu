@@ -24,9 +24,14 @@ int main() {
         {},
         {0, 0},
         {maze.getWidth()-1, maze.getHeight()-1},
-        false
+        false,
+        0
     };
     MazeResolver<size_t, BackendCUDA>().resolve(maze, solution);
-    debugArray2D(solution.distanceToEnd.data(), maze.getWidth(), maze.getHeight(), maze.getSize());
+    std::vector<char> pathValues(solution.maxDistance);
+    for (size_t i = 0; i < solution.maxDistance; ++i) {
+        pathValues[i] = 32 + i*223 / solution.maxDistance;
+    }
+    maze.toPNG<size_t, BackendCUDA>("maze_solve.png", 3, 3, solution.distanceToEnd, pathValues);
     return EXIT_SUCCESS;
 }

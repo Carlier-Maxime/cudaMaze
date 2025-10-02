@@ -15,6 +15,7 @@ struct MazeSolution {
     Position<GRID_TYPE> start;
     Position<GRID_TYPE> end;
     bool stopWhenPathFound;
+    GRID_TYPE maxDistance;
 };
 
 template <UnsignedIntegral GRID_TYPE, Backend_T Backend>

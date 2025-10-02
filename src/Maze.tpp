@@ -42,3 +42,17 @@ void Maze::toPNG(const std::string& path, const size_t verticalWallSize, const s
         .build(*this);
     toPNG(path, grid, verticalWallSize, horizontalWallSize);
 }
+
+template <UnsignedIntegral U, Backend_T Backend>
+void Maze::toPNG(const std::string& path, size_t verticalWallSize, size_t horizontalWallSize,
+    std::vector<U> pathValueIndices, std::vector<char> pathValues) const {
+    const auto grid = MazeGridBuilder<size_t, char, Backend>()
+    .setPathValues(pathValueIndices, pathValues)
+    .setWallAngleValue(0)
+    .setWallVerticalValue(0)
+    .setWallHorizontalValue(0)
+    .setWallVerticalSize(verticalWallSize)
+    .setWallHorizontalSize(horizontalWallSize)
+    .build(*this);
+    toPNG(path, grid, verticalWallSize, horizontalWallSize);
+}
