@@ -71,5 +71,5 @@ void MazeBuilderBase::build(Maze* maze_) {
         }
         freeData();
         if (verbose) std::cout << "free data, complete in : " << chronoStep << std::endl;
-        if (verbose) std::cout << "maze ("") build complete in : " << chronoAll << std::endl;
+        if (verbose) std::cout << "maze (" << maze->getWidth() << 'x' << maze->getHeight() << ") build complete in : " << chronoAll << std::endl;
 }
