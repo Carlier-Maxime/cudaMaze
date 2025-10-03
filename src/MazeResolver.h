@@ -14,7 +14,7 @@ struct MazeSolution {
     std::vector<uint8_t> path;
     Position<GRID_TYPE> start;
     Position<GRID_TYPE> end;
-    bool stopWhenPathFound;
+    bool stopWhenPathFound = true;
     GRID_TYPE maxDistance;
 };
 

@@ -7,6 +7,7 @@
 #include "cuda/mazeBuilderCuda.cuh"
 #include "cuda/mazeGridBuilderCuda.cuh"
 #include "cuda/mazeResolverCuda.cuh"
+#include "MazeResolverCPU.h"
 
 int main() {
     uint16_t h, w;
@@ -29,7 +30,7 @@ int main() {
         0
     };
     chrono.reset();
-    MazeResolver<size_t, BackendCUDA>().resolve(maze, solution);
+    MazeResolver<size_t, BackendCPU>().resolve(maze, solution);
     std::cout << "Solve Maze in : " << chrono << std::endl;
     chrono.reset();
     std::vector<char> pathValues(solution.maxDistance);
