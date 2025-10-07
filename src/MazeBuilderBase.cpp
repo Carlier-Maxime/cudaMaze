@@ -27,7 +27,7 @@ size_t MazeBuilderBase::breakWalls() {
     bool cond = true;
     size_t nb_step = 0;
     while (cond) {
-        std::cout << ++nb_step << '\r';
+        if (verbose) std::cout << ++nb_step << '\r';
         breakWallsStep(cond);
     }
     return nb_step;
