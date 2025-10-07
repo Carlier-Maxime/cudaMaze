@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MazeGridBuilderBase.h"
-#include "utils/Backend.h"
+#include "backend/Backend.h"
 
 class Maze;
 

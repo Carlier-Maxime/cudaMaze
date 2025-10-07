@@ -4,10 +4,7 @@
 #include <ostream>
 
 #include "utils/chronometer.hpp"
-#include "cuda/mazeBuilderCuda.cuh"
-#include "cuda/mazeGridBuilderCuda.cuh"
-#include "cuda/mazeResolverCuda.cuh"
-#include "MazeResolverCPU.h"
+#include "backend/Backends.cuh"
 
 int main() {
     uint16_t h, w;
