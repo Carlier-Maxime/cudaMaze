@@ -82,23 +82,23 @@ __global__ void kernelMazeToGrid(T *grid, const size_t height, const size_t widt
 }
 
 template <typename GRID_TYPE>
-__global__ void kernelMazeBFS(GRID_TYPE* __restrict__ grid, const size_t height, const size_t width,
-                              const bool* __restrict__ vWall, const bool* __restrict__ hWall,
-                              const Position<GRID_TYPE> start, const bool stopWhenPathFound,
-                              bool* __restrict__ cond_ret, GRID_TYPE step) {
-    const auto [y, x, i] = d_getArray2DIndices(width);
+__global__ void kernelMazeBFS(GRID_TYPE* __restrict__ grid, Position<GRID_TYPE>* __restrict__ indices, const size_t is1Size,
+                              const size_t height, const size_t width, const bool* __restrict__ vWall,
+                              const bool* __restrict__ hWall, bool* __restrict__ cond_ret, GRID_TYPE step) {
+    const auto index = d_getArray1DIndex()*5;
+    if (index >= is1Size) return;
+    const auto [x, y] = indices[index];
     if (y >= height || x >= width) return;
-    if (grid[i] == 0) {
-        if (!stopWhenPathFound || (y == start.y && x == start.x)) *cond_ret = true;
-        return;
-    }
-    if (grid[i] != step) return;
+    const auto i = y*width+x;
+    grid[i] = step;
     GRID_TYPE vWallIndex = y*(width-1)+x;
     GRID_TYPE hWallIndex = y*width+x;
     GRID_TYPE vwl = (width-1)*height;
     GRID_TYPE hwl = (height-1)*width;
-    if (x<width-1 && vWallIndex < vwl && !vWall[vWallIndex] && grid[i+1] == 0) grid[i+1] = grid[i]+1;
-    if (x>0 && vWallIndex > 0 && !vWall[vWallIndex-1] && grid[i-1] == 0) grid[i-1] = grid[i]+1;
-    if (y<height-1 && hWallIndex < hwl && !hWall[hWallIndex] && grid[i+width] == 0) grid[i+width] = grid[i]+1;
-    if (y>0 && hWallIndex > 0 && !hWall[hWallIndex-width] && grid[i-width] == 0) grid[i-width] = grid[i]+1;
+    if (x<width-1 && vWallIndex < vwl && !vWall[vWallIndex] && grid[i+1] == 0) indices[index+1] = {x+1, y};
+    if (x>0 && vWallIndex > 0 && !vWall[vWallIndex-1] && grid[i-1] == 0) indices[index+2] = {x-1, y};
+    if (y<height-1 && hWallIndex < hwl && !hWall[hWallIndex] && grid[i+width] == 0) indices[index+3] = {x, y+1};
+    if (y>0 && hWallIndex > 0 && !hWall[hWallIndex-width] && grid[i-width] == 0) indices[index+4] = {x, y-1};
+    indices[index] = {width, height};
+    *cond_ret = true;
 }

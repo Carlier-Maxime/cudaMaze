@@ -8,6 +8,7 @@ public:
     void resolve(const Maze& maze, MazeSolution<GRID_TYPE>& solution);
 private:
     GRID_TYPE *ws = nullptr;
+    Position<GRID_TYPE> *indices = nullptr;
     bool *cond = nullptr, *vWall = nullptr, *hWall = nullptr;
 };
 
