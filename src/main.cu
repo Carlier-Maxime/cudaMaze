@@ -5,18 +5,22 @@
 #include "../third_party/argparse.hpp"
 
 #include "utils/chronometer.hpp"
+#include "utils/terminalSize.hpp"
 #include "backend/Backends.cuh"
 
 int main(int argc, char* argv[]) {
     argparse::ArgumentParser program("maze");
 
-    size_t w = 5;
+    const auto ttySize = getTerminalSize(std::cout);
+    const auto tw = std::get<0>(ttySize), th = std::get<1>(ttySize);
+
+    size_t w = tw ? tw/4-2 : 5;
     program.add_argument("width")
         .help("width of the maze")
         .nargs(argparse::nargs_pattern::optional)
         .store_into(w);
 
-    size_t h = 5;
+    size_t h = th ? th/2-2 : 5;
     program.add_argument("height")
         .help("height of the maze")
         .nargs(argparse::nargs_pattern::optional)
