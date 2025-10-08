@@ -7,22 +7,26 @@
 
 template<Backend_T Backend>
 Maze Maze::make(const size_t height_, const size_t width_, const size_t seed_, const bool verbose) {
-    Maze maze;
-    maze.height = height_;
-    maze.width = width_;
-    maze.seed = seed_;
-    maze.verticalWall = {static_cast<bool *>(malloc(maze.getVWallSize()))};
-    maze.horizontalWall = {static_cast<bool *>(malloc(maze.getHWallSize()))};
-    if (verbose) std::cout << "Maze: " << maze.width << 'x' << maze.height << " with seed " << maze.seed << std::endl;
-    const auto max = roundToNextPowerOfTwo(maze.getSize());
-    if (static_cast<size_t>(std::numeric_limits<uint16_t>::max()) > max)
-        MazeBuilder<uint16_t, Backend>().setVerbosity(verbose).build(&maze);
-    else if (static_cast<size_t>(std::numeric_limits<uint32_t>::max()) > max)
-        MazeBuilder<uint32_t, Backend>().setVerbosity(verbose).build(&maze);
-    else if (std::numeric_limits<uint64_t>::max() > max)
-        MazeBuilder<uint32_t, Backend>().setVerbosity(verbose).build(&maze);
-    else throw std::runtime_error("Maze::make() failed: size is too big");
+    Maze maze(height_, width_, seed_, verbose);
+    maze.selectAndBuild<Backend, uint16_t, uint32_t, unsigned long long int>(verbose);
     return maze;
+}
+
+
+template <Backend_T Backend, UnsignedIntegral... Us>
+void Maze::selectAndBuild(const bool verbose) {
+    const auto max = roundToNextPowerOfTwo(getSize());
+    const bool built = (tryBuild<Us, Backend>(max, verbose) || ...);
+    if (!built) throw std::runtime_error("Maze::make() failed: size is too big");
+}
+
+template <UnsignedIntegral U, Backend_T Backend>
+bool Maze::tryBuild(const size_t max, bool verbose) {
+    if (static_cast<size_t>(std::numeric_limits<U>::max()) >= max) {
+        MazeBuilder<U, Backend>().setVerbosity(verbose).build(this);
+        return true;
+    }
+    return false;
 }
 
 template <Backend_T Backend>

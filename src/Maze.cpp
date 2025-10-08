@@ -6,7 +6,11 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../third_party/stb_image_write.h"
 
-Maze::Maze() : height(0), width(0), seed(0), verticalWall(nullptr), horizontalWall(nullptr) {
+Maze::Maze(const size_t height_, const size_t width_, const size_t seed_, const bool verbose) :
+        height(height_), width(width_), seed(seed_),
+        verticalWall(static_cast<bool *>(malloc(getVWallSize()))),
+        horizontalWall(static_cast<bool *>(malloc(getHWallSize()))) {
+    if (verbose) std::cout << "Maze: " << width << 'x' << height << " with seed " << seed << std::endl;
 }
 
 Maze::~Maze() {
