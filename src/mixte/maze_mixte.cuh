@@ -30,7 +30,17 @@ HDI T getGridElementValueOf_Impl(const size_t h, const size_t w, const size_t i,
     if (isHWall && isVWall) return wallAngleValue;
     const auto index = y * mazeWidth + x;
     const auto pathValue = pathValueIndices ? pathValues[pathValueIndices[index]] : *pathValues;
-    if (isHWall) return hWall[index] ? wallHorizontalValue : pathValue;
-    if (isVWall) return vWall[y*(mazeWidth-1)+x] ? wallVerticalValue : pathValue;
+    if (isHWall) {
+        if (hWall[index]) return wallHorizontalValue;
+        if (!pathValueIndices || pathValueIndices[index] != 0) return pathValue;
+        if (pathValueIndices[index+mazeWidth] == 0) return pathValue;
+        return pathValues[pathValueIndices[index+mazeWidth]];
+    }
+    if (isVWall) {
+        if (vWall[y*(mazeWidth-1)+x]) return wallVerticalValue;
+        if (!pathValueIndices || pathValueIndices[index] != 0) return pathValue;
+        if (pathValueIndices[index+1] == 0) return pathValue;
+        return pathValues[pathValueIndices[index+1]];
+    }
     return pathValue;
 }
