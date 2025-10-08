@@ -51,6 +51,11 @@ int main(int argc, char* argv[]) {
         .help("save maze solve to png file")
         .store_into(solutionPngFile);
 
+    bool solve;
+    program.add_argument("--solve").flag()
+        .help("solve maze and print solution in stdout")
+        .store_into(solve);
+
     try {
         program.parse_args(argc, argv);
         asciiMaze = !asciiMaze;
@@ -69,7 +74,7 @@ int main(int argc, char* argv[]) {
         if (verbose) std::cout << "Save Maze to PNG in : " << chrono << std::endl;
     }
     chrono.reset();
-    if (!solutionPngFile.empty()) {
+    if (!solutionPngFile.empty() || solve) {
         MazeSolution<size_t> solution = {
             {},
             {},
@@ -80,14 +85,17 @@ int main(int argc, char* argv[]) {
         };
         chrono.reset();
         MazeSolver<size_t, BackendCPU>().solve(maze, solution);
+        solution.makePath(maze, verbose || solve);
         if (verbose) std::cout << "Solve Maze in : " << chrono << std::endl;
         chrono.reset();
-        std::vector<char> pathValues(solution.maxDistance);
-        for (size_t i = 0; i < solution.maxDistance; ++i) {
-            pathValues[i] = static_cast<char>(32 + i*223 / solution.maxDistance);
+        if (!solutionPngFile.empty()) {
+            std::vector<char> pathValues(solution.maxDistance);
+            for (size_t i = 0; i < solution.maxDistance; ++i) {
+                pathValues[i] = static_cast<char>(32 + i*223 / solution.maxDistance);
+            }
+            maze.toPNG<size_t, BackendCUDA>("maze_solve.png", 3, 3, solution.distanceToEnd, pathValues);
+            if (verbose) std::cout << "Save maze solve to PNG in : " << chrono << std::endl;
         }
-        maze.toPNG<size_t, BackendCUDA>("maze_solve.png", 3, 3, solution.distanceToEnd, pathValues);
-        if (verbose) std::cout << "Save maze solve to PNG in : " << chrono << std::endl;
     }
     return EXIT_SUCCESS;
 }
