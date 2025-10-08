@@ -21,6 +21,14 @@ void Maze::toPNG(const std::string& path, const std::vector<char>& grid, const s
     ) throw std::runtime_error("Failed to write image");
 }
 
+bool Maze::isVWall(const size_t vWallIndex) const {
+    return verticalWall[vWallIndex];
+}
+
+bool Maze::isHWall(const size_t hWallIndex) const {
+    return horizontalWall[hWallIndex];
+}
+
 size_t Maze::getGridHeight(const size_t verticalWallSize) const {
     return getGridSize(getHeight(), verticalWallSize);
 }

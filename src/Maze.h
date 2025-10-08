@@ -20,6 +20,8 @@ public:
     void toPNG(const std::string& path, size_t verticalWallSize, size_t horizontalWallSize,
         std::vector<U> pathValueIndices, std::vector<char> pathValues) const;
     void toPNG(const std::string& path, const std::vector<char>& grid, size_t verticalWallSize, size_t horizontalWallSize) const;
+    [[nodiscard]] bool isVWall(size_t vWallIndex) const;
+    [[nodiscard]] bool isHWall(size_t hWallIndex) const;
     [[nodiscard]] size_t getGridHeight(size_t verticalWallSize) const;
     [[nodiscard]] size_t getGridWidth(size_t horizontalWallSize) const;
     [[nodiscard]] size_t getVWallSize() const;
