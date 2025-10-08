@@ -1,34 +1,36 @@
 #pragma once
 
 template <UnsignedIntegral GRID_TYPE>
-void MazeSolution<GRID_TYPE>::makePath(const Maze& maze, const bool verbose) {
+void MazeSolution<GRID_TYPE>::makePath(const Maze& maze, const bool printPath, const bool setDist0IfPath) {
     const auto h = maze.getHeight(), w = maze.getWidth();
     auto p = start;
     path.reserve(distanceToEnd[start.y * w + start.x]);
     while (p.y != end.y || p.x != end.x) {
         auto i = p.y*w+p.x;
         auto dist = distanceToEnd[i];
-        GRID_TYPE vWallIndex = p.y*(w-1)+p.x;
-        GRID_TYPE hWallIndex = i;
+        GRID_TYPE vwi = p.y*(w-1)+p.x;
+        GRID_TYPE hwi = i;
         GRID_TYPE vwl = maze.getVWallSize();
         GRID_TYPE hwl = maze.getHWallSize();
-        if (p.x<w-1 && vWallIndex < vwl && !maze.isVWall(vWallIndex) && distanceToEnd[i+1] < dist) {
+        if (p.x<w-1 && vwi < vwl && !maze.isVWall(vwi) && distanceToEnd[i+1] > 0 && distanceToEnd[i+1] < dist) {
             path.emplace_back(Direction::Right);
-            if (verbose) std::cout << 'R';
+            if (printPath) std::cout << 'R';
             p = {p.x+1, p.y};
-        } else if (p.x>0 && vWallIndex > 0 && !maze.isVWall(vWallIndex-1) && distanceToEnd[i-1] < dist) {
+        } else if (p.x>0 && vwi > 0 && !maze.isVWall(vwi-1) && distanceToEnd[i-1] > 0 && distanceToEnd[i-1] < dist) {
             path.emplace_back(Direction::Left);
-            if (verbose) std::cout << 'L';
+            if (printPath) std::cout << 'L';
             p = {p.x-1, p.y};
-        } else if (p.y<h-1 && hWallIndex < hwl && !maze.isHWall(hWallIndex) && distanceToEnd[i+w] < dist) {
+        } else if (p.y<h-1 && hwi < hwl && !maze.isHWall(hwi) && distanceToEnd[i+w] > 0 && distanceToEnd[i+w] < dist) {
             path.emplace_back(Direction::Down);
-            if (verbose) std::cout << 'D';
+            if (printPath) std::cout << 'D';
             p = {p.x, p.y+1};
-        } else if (p.y>0 && hWallIndex > 0 && !maze.isHWall(hWallIndex-w) && distanceToEnd[i-w] < dist) {
+        } else if (p.y>0 && hwi > 0 && !maze.isHWall(hwi-w) && distanceToEnd[i-w] > 0 && distanceToEnd[i-w] < dist) {
             path.emplace_back(Direction::Up);
-            if (verbose) std::cout << 'U';
+            if (printPath) std::cout << 'U';
             p = {p.x, p.y-1};
         } else throw std::runtime_error("Invalid path");
+        if (setDist0IfPath) distanceToEnd[i] = 0;
     }
-    std::cout << std::endl;
+    if (setDist0IfPath) distanceToEnd[p.y * w + p.x] = 0;
+    if (printPath) std::cout << std::endl;
 }

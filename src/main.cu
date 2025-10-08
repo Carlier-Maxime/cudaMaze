@@ -85,13 +85,14 @@ int main(int argc, char* argv[]) {
         };
         chrono.reset();
         MazeSolver<size_t, BackendCPU>().solve(maze, solution);
-        solution.makePath(maze, verbose || solve);
+        solution.makePath(maze, verbose || solve, true);
         if (verbose) std::cout << "Solve Maze in : " << chrono << std::endl;
         chrono.reset();
         if (!solutionPngFile.empty()) {
             std::vector<char> pathValues(solution.maxDistance);
-            for (size_t i = 0; i < solution.maxDistance; ++i) {
-                pathValues[i] = static_cast<char>(32 + i*223 / solution.maxDistance);
+            pathValues[0] = static_cast<char>(255);
+            for (size_t i = 1; i < solution.maxDistance; ++i) {
+                pathValues[i] = static_cast<char>(16 + i*207 / solution.maxDistance);
             }
             maze.toPNG<size_t, BackendCUDA>("maze_solve.png", 3, 3, solution.distanceToEnd, pathValues);
             if (verbose) std::cout << "Save maze solve to PNG in : " << chrono << std::endl;

@@ -15,7 +15,7 @@ struct MazeSolution {
     bool stopWhenPathFound = true;
     GRID_TYPE maxDistance;
 
-    void makePath(const Maze& maze, bool verbose);
+    void makePath(const Maze& maze, bool printPath, bool setDist0IfPath);
 };
 
 #include "MazeSolution.tpp"
