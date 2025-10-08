@@ -4,7 +4,7 @@
 #include "Maze.h"
 
 template <UnsignedIntegral GRID_TYPE>
-void MazeResolver<GRID_TYPE, BackendCPU>::resolve(const Maze& maze, MazeSolution<GRID_TYPE>& solution) {
+void MazeSolver<GRID_TYPE, BackendCPU>::solve(const Maze& maze, MazeSolution<GRID_TYPE>& solution) {
     const auto w = maze.getWidth();
     const auto h = maze.getHeight();
     std::queue<Position<GRID_TYPE>> q;

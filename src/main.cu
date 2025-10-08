@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
             0
         };
         chrono.reset();
-        MazeResolver<size_t, BackendCPU>().resolve(maze, solution);
+        MazeSolver<size_t, BackendCPU>().solve(maze, solution);
         if (verbose) std::cout << "Solve Maze in : " << chrono << std::endl;
         chrono.reset();
         std::vector<char> pathValues(solution.maxDistance);

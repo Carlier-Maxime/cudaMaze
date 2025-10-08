@@ -39,7 +39,7 @@ private:
     template <UnsignedIntegral U, typename GRID_TYPE, Backend_T Backend>
     friend class MazeGridBuilder;
     template <UnsignedIntegral GRID_TYPE, Backend_T Backend>
-    friend class MazeResolver;
+    friend class MazeSolver;
 protected:
     bool *verticalWall, *horizontalWall;
 };

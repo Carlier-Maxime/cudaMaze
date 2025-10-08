@@ -6,7 +6,7 @@
 #include "maze_kernels.cuh"
 
 template <UnsignedIntegral GRID_TYPE>
-void MazeResolver<GRID_TYPE, BackendCUDA>::resolve(const Maze& maze, MazeSolution<GRID_TYPE>& solution) {
+void MazeSolver<GRID_TYPE, BackendCUDA>::solve(const Maze& maze, MazeSolution<GRID_TYPE>& solution) {
     HANDLE_ERROR(cudaMalloc(&ws, sizeof(GRID_TYPE) * maze.getSize()));
     kernelInitArray1D<GRID_TYPE><<<GET_MAX_BLOCKS_1D(maze.getSize()), DEFAULT_THREADS_DIMS_1D>>>(ws, maze.getSize(), 0);
     const auto h = maze.getHeight(), w = maze.getWidth();

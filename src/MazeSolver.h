@@ -19,7 +19,7 @@ struct MazeSolution {
 };
 
 template <UnsignedIntegral GRID_TYPE, Backend_T Backend>
-class MazeResolver {
+class MazeSolver {
 public:
-    void resolve(const Maze& maze, MazeSolution<GRID_TYPE>& solution);
+    void solve(const Maze& maze, MazeSolution<GRID_TYPE>& solution);
 };

@@ -2,4 +2,4 @@
 
 #include "Backend.h"
 #include "../MazeGridBuilderCPU.h"
-#include "../MazeResolverCPU.h"
+#include "../MazeSolverCPU.h"
