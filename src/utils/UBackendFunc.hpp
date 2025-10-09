@@ -24,6 +24,10 @@ bool tryCallUBackendFunc(const size_t max, UBackendFunc& func) {
 
 template <UBackendFunc_T UBackendFunc, Backend_T Backend, UnsignedIntegral... Us>
 void selectAndCallUBackendFunc(const size_t max, UBackendFunc& func) {
-    const bool built = (tryCallUBackendFunc<Us, Backend>(max, func) || ...);
-    if (!built) throw std::runtime_error("selectAndCall failed: size is too big");
+    if constexpr (sizeof...(Us) == 0) {
+        selectAndCallUBackendFunc<UBackendFunc, Backend, uint8_t, uint16_t, uint32_t, uint64_t>(max, func);
+    } else {
+        const bool built = (tryCallUBackendFunc<Us, Backend>(max, func) || ...);
+        if (!built) throw std::runtime_error("selectAndCall failed: size is too big");
+    }
 }

@@ -75,7 +75,7 @@ size_t Maze::getSeed() const {
 
 std::ostream& operator<<(std::ostream& os, const Maze& maze) {
     auto gsm = GridStringMazeUBF{maze, 1, 3, ' ', '+', '|', '-'};
-    selectAndCallUBackendFunc<GridStringMazeUBF, BackendCPU, uint8_t, uint16_t, uint32_t, uint64_t>(
+    selectAndCallUBackendFunc<GridStringMazeUBF, BackendCPU>(
         maze.getGridSize(gsm.vws, gsm.hws), gsm
     );
     os << std::endl;
