@@ -1,5 +1,4 @@
 #pragma once
-#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -12,6 +11,8 @@ public:
     template <Backend_T Backend>
     static Maze make(size_t height_, size_t width_, size_t seed_, bool verbose);
     ~Maze();
+    template <Backend_T BackendSolver, Backend_T BackendViewer>
+    void solve(const std::string& pngFile, bool printPath, bool verbose) const;
     template <Backend_T Backend>
     void toPNG(const std::string& path) const;
     template <Backend_T Backend>
