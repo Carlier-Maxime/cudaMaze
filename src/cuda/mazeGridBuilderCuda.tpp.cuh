@@ -23,7 +23,7 @@ std::vector<GRID_TYPE> MazeGridBuilder<U, GRID_TYPE, BackendCUDA>::build(const M
         HANDLE_ERROR(cudaMalloc(&d_pathValueIndices, PathValueIndicesSizeOctet));
         cudaMemcpy(d_pathValueIndices, this->pathValueIndices.data(), PathValueIndicesSizeOctet, cudaMemcpyDefault);
     }
-    kernelMazeToGrid<size_t, GRID_TYPE><<<GET_MAX_BLOCKS_2D(h, w), DEFAULT_THREADS_DIMS_2D>>>(
+    kernelMazeToGrid<U, GRID_TYPE><<<GET_MAX_BLOCKS_2D(h, w), DEFAULT_THREADS_DIMS_2D>>>(
         d_grid, h, w, d_vWall, d_hWall, this->wallVerticalSize,
         this->wallHorizontalSize, d_pathValueIndices, d_pathValues, this->pathValues.size()-1,
         this->wallAngleValue, this->wallVerticalValue, this->wallHorizontalValue, maze.getWidth());

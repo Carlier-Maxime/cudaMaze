@@ -73,27 +73,8 @@ size_t Maze::getSeed() const {
     return seed;
 }
 
-struct GridStringMazeUBF : UBackendFunc {
-    template <UnsignedIntegral U, Backend_T Backend>
-    void call() {
-        grid = MazeGridBuilder<U, char, Backend>()
-            .setPathValue(' ')
-            .setWallAngleValue('+')
-            .setWallVerticalValue('|')
-            .setWallHorizontalValue('-')
-            .setWallVerticalSize(1)
-            .setWallHorizontalSize(3)
-            .build(maze);
-    }
-
-    const Maze& maze;
-    std::vector<char> grid;
-
-    explicit GridStringMazeUBF(const Maze& maze_) : maze(maze_) {}
-};
-
 std::ostream& operator<<(std::ostream& os, const Maze& maze) {
-    auto gsm = GridStringMazeUBF{maze};
+    auto gsm = GridStringMazeUBF{maze, 1, 3, ' ', '+', '|', '-'};
     selectAndCallUBackendFunc<GridStringMazeUBF, BackendCPU, uint8_t, uint16_t, uint32_t, uint64_t>(
         maze.getGridSize(1, 3), gsm
     );

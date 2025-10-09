@@ -33,15 +33,11 @@ void Maze::toPNG(const std::string &path) const {
 
 template <Backend_T Backend>
 void Maze::toPNG(const std::string& path, const size_t verticalWallSize, const size_t horizontalWallSize) const {
-    const auto grid = MazeGridBuilder<size_t, char, Backend>()
-        .setPathValue(-1)
-        .setWallAngleValue(0)
-        .setWallVerticalValue(0)
-        .setWallHorizontalValue(0)
-        .setWallVerticalSize(verticalWallSize)
-        .setWallHorizontalSize(horizontalWallSize)
-        .build(*this);
-    toPNG(path, grid, verticalWallSize, horizontalWallSize);
+    auto gsm = GridStringMazeUBF{*this, verticalWallSize, horizontalWallSize, -1, 0, 0, 0};
+    selectAndCallUBackendFunc<GridStringMazeUBF, Backend, uint8_t, uint16_t, uint32_t, uint64_t>(
+        getGridSize(verticalWallSize, horizontalWallSize), gsm
+    );
+    toPNG(path, gsm.grid, verticalWallSize, horizontalWallSize);
 }
 
 template <UnsignedIntegral U, Backend_T Backend>
