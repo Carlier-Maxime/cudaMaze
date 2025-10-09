@@ -76,12 +76,12 @@ size_t Maze::getSeed() const {
 std::ostream& operator<<(std::ostream& os, const Maze& maze) {
     auto gsm = GridStringMazeUBF{maze, 1, 3, ' ', '+', '|', '-'};
     selectAndCallUBackendFunc<GridStringMazeUBF, BackendCPU, uint8_t, uint16_t, uint32_t, uint64_t>(
-        maze.getGridSize(1, 3), gsm
+        maze.getGridSize(gsm.vws, gsm.hws), gsm
     );
     os << std::endl;
-    for (size_t i = 0; i < maze.getGridHeight(1); i++) {
-        for (size_t j = 0; j < maze.getGridWidth(3); j++) {
-            os << gsm.grid[i*maze.getGridWidth(3)+j];
+    for (size_t i = 0; i < maze.getGridHeight(gsm.vws); i++) {
+        for (size_t j = 0; j < maze.getGridWidth(gsm.hws); j++) {
+            os << gsm.grid[i*maze.getGridWidth(gsm.hws)+j];
         }
         os << std::endl;
     }

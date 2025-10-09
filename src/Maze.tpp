@@ -35,9 +35,9 @@ template <Backend_T Backend>
 void Maze::toPNG(const std::string& path, const size_t verticalWallSize, const size_t horizontalWallSize) const {
     auto gsm = GridStringMazeUBF{*this, verticalWallSize, horizontalWallSize, -1, 0, 0, 0};
     selectAndCallUBackendFunc<GridStringMazeUBF, Backend, uint8_t, uint16_t, uint32_t, uint64_t>(
-        getGridSize(verticalWallSize, horizontalWallSize), gsm
+        getGridSize(gsm.vws, gsm.hws), gsm
     );
-    toPNG(path, gsm.grid, verticalWallSize, horizontalWallSize);
+    toPNG(path, gsm.grid, gsm.vws, gsm.hws);
 }
 
 template <UnsignedIntegral U, Backend_T Backend>
