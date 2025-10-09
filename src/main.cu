@@ -14,13 +14,13 @@ int main(int argc, char* argv[]) {
     const auto ttySize = getTerminalSize(std::cout);
     const auto tw = std::get<0>(ttySize), th = std::get<1>(ttySize);
 
-    size_t w = tw ? tw/4-2 : 5;
+    size_t w = max(tw/4-2, 3ul);
     program.add_argument("width")
         .help("width of the maze")
         .nargs(argparse::nargs_pattern::optional)
         .store_into(w);
 
-    size_t h = th ? th/2-2 : 5;
+    size_t h = max(th/2-2, 3ul);
     program.add_argument("height")
         .help("height of the maze")
         .nargs(argparse::nargs_pattern::optional)
