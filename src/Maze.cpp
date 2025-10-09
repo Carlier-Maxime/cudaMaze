@@ -34,11 +34,15 @@ bool Maze::isHWall(const size_t hWallIndex) const {
 }
 
 size_t Maze::getGridHeight(const size_t verticalWallSize) const {
-    return getGridSize(getHeight(), verticalWallSize);
+    return getGridSizeOf(getHeight(), verticalWallSize);
 }
 
 size_t Maze::getGridWidth(const size_t horizontalWallSize) const {
-    return getGridSize(getWidth(), horizontalWallSize);
+    return getGridSizeOf(getWidth(), horizontalWallSize);
+}
+
+size_t Maze::getGridSize(const size_t verticalWallSize, const size_t horizontalWallSize) const {
+    return getGridHeight(verticalWallSize) * getGridWidth(horizontalWallSize);
 }
 
 size_t Maze::getVWallSize() const {
@@ -49,7 +53,7 @@ size_t Maze::getHWallSize() const {
     return (height-1)*width;
 }
 
-size_t Maze::getGridSize(const size_t size, const size_t wallSize) {
+size_t Maze::getGridSizeOf(const size_t size, const size_t wallSize) {
     return size+size*wallSize+2*wallSize-1;
 }
 
@@ -69,19 +73,34 @@ size_t Maze::getSeed() const {
     return seed;
 }
 
+struct GridStringMazeUBF : UBackendFunc {
+    template <UnsignedIntegral U, Backend_T Backend>
+    void call() {
+        grid = MazeGridBuilder<U, char, Backend>()
+            .setPathValue(' ')
+            .setWallAngleValue('+')
+            .setWallVerticalValue('|')
+            .setWallHorizontalValue('-')
+            .setWallVerticalSize(1)
+            .setWallHorizontalSize(3)
+            .build(maze);
+    }
+
+    const Maze& maze;
+    std::vector<char> grid;
+
+    explicit GridStringMazeUBF(const Maze& maze_) : maze(maze_) {}
+};
+
 std::ostream& operator<<(std::ostream& os, const Maze& maze) {
-    const auto grid = MazeGridBuilder<size_t, char, BackendCPU>()
-        .setPathValue(' ')
-        .setWallAngleValue('+')
-        .setWallVerticalValue('|')
-        .setWallHorizontalValue('-')
-        .setWallVerticalSize(1)
-        .setWallHorizontalSize(3)
-        .build(maze);
+    auto gsm = GridStringMazeUBF{maze};
+    selectAndCallUBackendFunc<GridStringMazeUBF, BackendCPU, uint8_t, uint16_t, uint32_t, uint64_t>(
+        maze.getGridSize(1, 3), gsm
+    );
     os << std::endl;
     for (size_t i = 0; i < maze.getGridHeight(1); i++) {
         for (size_t j = 0; j < maze.getGridWidth(3); j++) {
-            os << grid[i*maze.getGridWidth(3)+j];
+            os << gsm.grid[i*maze.getGridWidth(3)+j];
         }
         os << std::endl;
     }

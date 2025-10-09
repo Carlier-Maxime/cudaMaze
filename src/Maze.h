@@ -24,6 +24,7 @@ public:
     [[nodiscard]] bool isHWall(size_t hWallIndex) const;
     [[nodiscard]] size_t getGridHeight(size_t verticalWallSize) const;
     [[nodiscard]] size_t getGridWidth(size_t horizontalWallSize) const;
+    [[nodiscard]] size_t getGridSize(size_t verticalWallSize, size_t horizontalWallSize) const;
     [[nodiscard]] size_t getVWallSize() const;
     [[nodiscard]] size_t getHWallSize() const;
     [[nodiscard]] size_t getSize() const;
@@ -33,7 +34,7 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Maze& maze);
 private:
     Maze(size_t height_, size_t width_, size_t seed_, bool verbose);
-    static size_t getGridSize(size_t size, size_t wallSize);
+    static size_t getGridSizeOf(size_t size, size_t wallSize);
     size_t height, width;
     size_t seed;
     template <UnsignedIntegral GRID_TYPE, Backend_T Backend>

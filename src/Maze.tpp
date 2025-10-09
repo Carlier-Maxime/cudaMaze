@@ -6,7 +6,7 @@
 
 struct BuildMazeUBF : UBackendFunc {
     template <UnsignedIntegral U, Backend_T Backend>
-    void call() const {
+    void call() {
         MazeBuilder<U, Backend>().setVerbosity(verbose).build(maze);
     }
 
@@ -19,8 +19,9 @@ struct BuildMazeUBF : UBackendFunc {
 template<Backend_T Backend>
 Maze Maze::make(const size_t height_, const size_t width_, const size_t seed_, const bool verbose) {
     Maze maze(height_, width_, seed_, verbose);
+    auto bm = BuildMazeUBF{&maze, verbose};
     selectAndCallUBackendFunc<BuildMazeUBF, Backend, uint16_t, uint32_t, unsigned long long int>(
-        roundToNextPowerOfTwo(maze.getSize()), {&maze, verbose}
+        roundToNextPowerOfTwo(maze.getSize()), bm
     );
     return maze;
 }

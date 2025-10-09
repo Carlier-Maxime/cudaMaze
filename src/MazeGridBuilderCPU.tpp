@@ -10,7 +10,7 @@ std::vector<GRID_TYPE> MazeGridBuilder<U, GRID_TYPE, BackendCPU>::build(const Ma
     for (size_t i = 0; i < h; ++i) {
         for (size_t j = 0; j < w; ++j) {
             const auto index = i * w + j;
-            grid[index] = getGridElementValueOf_Impl<size_t, GRID_TYPE>(
+            grid[index] = getGridElementValueOf_Impl<U, GRID_TYPE>(
                 h, w, i, j,this->wallVerticalSize, this->wallHorizontalSize,
                 this->pathValueIndices.empty() ? nullptr : this->pathValueIndices.data(), this->pathValues.data(),
                 this->pathValues.size()-1, this->wallAngleValue, this->wallVerticalValue, this->wallHorizontalValue,
