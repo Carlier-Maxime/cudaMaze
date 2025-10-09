@@ -33,10 +33,6 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const Maze& maze);
 private:
     Maze(size_t height_, size_t width_, size_t seed_, bool verbose);
-    template <Backend_T Backend, UnsignedIntegral... Us>
-    void selectAndBuild(bool verbose);
-    template <UnsignedIntegral U, Backend_T Backend>
-    bool tryBuild(size_t max, bool verbose);
     static size_t getGridSize(size_t size, size_t wallSize);
     size_t height, width;
     size_t seed;
