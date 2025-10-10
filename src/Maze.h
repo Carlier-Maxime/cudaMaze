@@ -11,7 +11,7 @@ public:
     template <Backend_T Backend>
     static Maze make(size_t height_, size_t width_, size_t seed_, bool verbose);
     ~Maze();
-    template <Backend_T BackendSolver, Backend_T BackendViewer>
+    template <Backend_T BackendViewer>
     void solve(const std::string& pngFile, size_t png_vws, size_t png_hws,
                bool printPath, bool printMaze, size_t a_vws, size_t a_hws, bool verbose) const;
     template <Backend_T Backend>

@@ -15,19 +15,19 @@ void MazeSolution<GRID_TYPE>::makePath(const Maze& maze, const bool printPath, c
         if (p.x<w-1 && vwi < vwl && !maze.isVWall(vwi) && distanceToEnd[i+1] > 0 && distanceToEnd[i+1] < dist) {
             path.emplace_back(Direction::Right);
             if (printPath) std::cout << 'R';
-            p = {p.x+1, p.y};
+            p = {static_cast<GRID_TYPE>(p.x+1), static_cast<GRID_TYPE>(p.y)};
         } else if (p.x>0 && vwi > 0 && !maze.isVWall(vwi-1) && distanceToEnd[i-1] > 0 && distanceToEnd[i-1] < dist) {
             path.emplace_back(Direction::Left);
             if (printPath) std::cout << 'L';
-            p = {p.x-1, p.y};
+            p = {static_cast<GRID_TYPE>(p.x-1), static_cast<GRID_TYPE>(p.y)};
         } else if (p.y<h-1 && hwi < hwl && !maze.isHWall(hwi) && distanceToEnd[i+w] > 0 && distanceToEnd[i+w] < dist) {
             path.emplace_back(Direction::Down);
             if (printPath) std::cout << 'D';
-            p = {p.x, p.y+1};
+            p = {static_cast<GRID_TYPE>(p.x), static_cast<GRID_TYPE>(p.y+1)};
         } else if (p.y>0 && hwi > 0 && !maze.isHWall(hwi-w) && distanceToEnd[i-w] > 0 && distanceToEnd[i-w] < dist) {
             path.emplace_back(Direction::Up);
             if (printPath) std::cout << 'U';
-            p = {p.x, p.y-1};
+            p = {static_cast<GRID_TYPE>(p.x), static_cast<GRID_TYPE>(p.y-1)};
         } else throw std::runtime_error("Invalid path");
         if (setDist0IfPath) distanceToEnd[i] = 0;
     }
