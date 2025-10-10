@@ -29,7 +29,8 @@ Maze Maze::make(const size_t height_, const size_t width_, const size_t seed_, c
 }
 
 template <Backend_T BackendSolver, Backend_T BackendViewer>
-void Maze::solve(const std::string& pngFile, const size_t verticalWallSize, const size_t horizontalWallSize, const bool printPath, const bool verbose) const {
+void Maze::solve(const std::string& pngFile, const size_t png_vws, const size_t png_hws, const bool printPath,
+                 const bool printMaze, const size_t a_vws, const size_t a_hws, const bool verbose) const {
     auto chrono = Chronometer();
     MazeSolution<size_t> solution = {
         {},
@@ -43,13 +44,20 @@ void Maze::solve(const std::string& pngFile, const size_t verticalWallSize, cons
     solution.makePath(*this, verbose || printPath, true);
     if (verbose) std::cout << "Solve Maze in : " << chrono << std::endl;
     chrono.reset();
+    if (printMaze) {
+        std::vector pathValues(solution.maxDistance, ' ');
+        pathValues[0] = ':';
+        print<size_t, BackendViewer>(std::cout, a_vws, a_hws, solution.distanceToEnd, pathValues) << std::endl;
+        if (verbose) std::cout << "Print maze solve in : " << chrono << std::endl;
+    }
+    chrono.reset();
     if (!pngFile.empty()) {
         std::vector<char> pathValues(solution.maxDistance);
         pathValues[0] = static_cast<char>(255);
         for (size_t i = 1; i < solution.maxDistance; ++i) {
             pathValues[i] = static_cast<char>(16 + i*207 / solution.maxDistance);
         }
-        toPNG<size_t, BackendViewer>(pngFile, verticalWallSize, horizontalWallSize, solution.distanceToEnd, pathValues);
+        toPNG<size_t, BackendViewer>(pngFile, png_vws, png_hws, solution.distanceToEnd, pathValues);
         if (verbose) std::cout << "Save maze solve to PNG in : " << chrono << std::endl;
     }
 }
@@ -80,4 +88,18 @@ void Maze::toPNG(const std::string& path, size_t verticalWallSize, size_t horizo
     .setWallHorizontalSize(horizontalWallSize)
     .build(*this);
     toPNG(path, grid, verticalWallSize, horizontalWallSize);
+}
+
+template <UnsignedIntegral U, Backend_T Backend>
+std::ostream& Maze::print(std::ostream& os, size_t verticalWallSize, size_t horizontalWallSize,
+    std::vector<U> pathValueIndices, std::vector<char> pathValues) const {
+    const auto grid = MazeGridBuilder<U, char, Backend>()
+    .setPathValues(pathValueIndices, pathValues)
+    .setWallAngleValue('+')
+    .setWallVerticalValue('|')
+    .setWallHorizontalValue('-')
+    .setWallVerticalSize(verticalWallSize)
+    .setWallHorizontalSize(horizontalWallSize)
+    .build(*this);
+    return print(os, grid, verticalWallSize, horizontalWallSize);
 }

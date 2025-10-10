@@ -80,10 +80,15 @@ std::ostream& Maze::print(std::ostream& os, const size_t verticalWallSize, const
     selectAndCallUBackendFunc<GridStringMazeUBF, BackendCPU>(
         getGridSize(gsm.vws, gsm.hws), gsm
     );
+    return print(os, gsm.grid, gsm.vws, gsm.hws);
+}
+
+std::ostream & Maze::print(std::ostream &os, const std::vector<char> &grid,
+                           const size_t verticalWallSize, const size_t horizontalWallSize) const {
     os << std::endl;
-    for (size_t i = 0; i < getGridHeight(gsm.vws); i++) {
-        for (size_t j = 0; j < getGridWidth(gsm.hws); j++) {
-            os << gsm.grid[i*getGridWidth(gsm.hws)+j];
+    for (size_t i = 0; i < getGridHeight(verticalWallSize); i++) {
+        for (size_t j = 0; j < getGridWidth(horizontalWallSize); j++) {
+            os << grid[i*getGridWidth(horizontalWallSize)+j];
         }
         os << std::endl;
     }

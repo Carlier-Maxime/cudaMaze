@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
     }
     chrono.reset();
     if (!solutionPngFile.empty() || solve) {
-        maze.solve<BackendCPU, BackendCUDA>(solutionPngFile, png_vws, png_hws, solve, verbose);
+        maze.solve<BackendCPU, BackendCUDA>(solutionPngFile, png_vws, png_hws, solve, solve, a_vws, a_hws, verbose);
     }
     return EXIT_SUCCESS;
 }

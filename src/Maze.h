@@ -12,7 +12,8 @@ public:
     static Maze make(size_t height_, size_t width_, size_t seed_, bool verbose);
     ~Maze();
     template <Backend_T BackendSolver, Backend_T BackendViewer>
-    void solve(const std::string& pngFile, size_t verticalWallSize, size_t horizontalWallSize, bool printPath, bool verbose) const;
+    void solve(const std::string& pngFile, size_t png_vws, size_t png_hws,
+               bool printPath, bool printMaze, size_t a_vws, size_t a_hws, bool verbose) const;
     template <Backend_T Backend>
     void toPNG(const std::string& path) const;
     template <Backend_T Backend>
@@ -33,6 +34,10 @@ public:
     [[nodiscard]] size_t getWidth() const;
     [[nodiscard]] size_t getSeed() const;
     std::ostream& print(std::ostream& os, size_t verticalWallSize, size_t horizontalWallSize) const;
+    template <UnsignedIntegral U, Backend_T Backend>
+    std::ostream& print(std::ostream& os, size_t verticalWallSize, size_t horizontalWallSize,
+        std::vector<U> pathValueIndices, std::vector<char> pathValues) const;
+    std::ostream& print(std::ostream& os, const std::vector<char>& grid, size_t verticalWallSize, size_t horizontalWallSize) const;
     friend std::ostream& operator<<(std::ostream& os, const Maze& maze);
 private:
     Maze(size_t height_, size_t width_, size_t seed_, bool verbose);
