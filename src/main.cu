@@ -27,32 +27,32 @@ int main(int argc, char* argv[]) {
         .store_into(h);
 
     size_t seed = time(nullptr);
-    program.add_argument("--seed")
+    program.add_argument("--seed", "-s")
         .help("seed for the random number generator, actual time is used by default")
         .store_into(seed);
 
     bool verbose;
-    program.add_argument("--verbose").flag()
+    program.add_argument("--verbose", "-V").flag()
         .help("verbose mode")
         .store_into(verbose);
 
     bool asciiMaze;
-    program.add_argument("--not_ascii").flag()
+    program.add_argument("--not_ascii", "--notAscii", "-na").flag()
         .help("disable print maze using ascii art")
         .store_into(asciiMaze);
 
-    std::string png_file;
-    program.add_argument("--png_file")
+    std::string pngFile;
+    program.add_argument("--png_file", "--pngFile", "-pf")
         .help("save maze to png file")
-        .store_into(png_file);
+        .store_into(pngFile);
 
     std::string solutionPngFile;
-    program.add_argument("--solution_png_file")
+    program.add_argument("--solution_png_file", "--solutionPngFile", "-Spf")
         .help("save maze solve to png file")
         .store_into(solutionPngFile);
 
     bool solve;
-    program.add_argument("--solve").flag()
+    program.add_argument("--solve", "-S").flag()
         .help("solve maze and print solution in stdout")
         .store_into(solve);
 
@@ -69,8 +69,8 @@ int main(int argc, char* argv[]) {
     const auto maze = Maze::make<BackendCUDA>(h, w, seed, verbose);
     if (asciiMaze) std::cout << maze << std::endl;
     auto chrono = Chronometer();
-    if (!png_file.empty()) {
-        maze.toPNG<BackendCUDA>(png_file);
+    if (!pngFile.empty()) {
+        maze.toPNG<BackendCUDA>(pngFile);
         if (verbose) std::cout << "Save Maze to PNG in : " << chrono << std::endl;
     }
     chrono.reset();

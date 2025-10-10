@@ -49,7 +49,7 @@ void Maze::solve(const std::string& pngFile, const bool printPath, const bool ve
         for (size_t i = 1; i < solution.maxDistance; ++i) {
             pathValues[i] = static_cast<char>(16 + i*207 / solution.maxDistance);
         }
-        toPNG<size_t, BackendViewer>("maze_solve.png", 3, 3, solution.distanceToEnd, pathValues);
+        toPNG<size_t, BackendViewer>(pngFile, 3, 3, solution.distanceToEnd, pathValues);
         if (verbose) std::cout << "Save maze solve to PNG in : " << chrono << std::endl;
     }
 }
