@@ -32,6 +32,7 @@ public:
     [[nodiscard]] size_t getHeight() const;
     [[nodiscard]] size_t getWidth() const;
     [[nodiscard]] size_t getSeed() const;
+    std::ostream& print(std::ostream& os, size_t verticalWallSize, size_t horizontalWallSize) const;
     friend std::ostream& operator<<(std::ostream& os, const Maze& maze);
 private:
     Maze(size_t height_, size_t width_, size_t seed_, bool verbose);

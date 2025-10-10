@@ -14,13 +14,13 @@ int main(int argc, char* argv[]) {
     const auto ttySize = getTerminalSize(std::cout);
     const auto tw = std::get<0>(ttySize), th = std::get<1>(ttySize);
 
-    size_t w = max(tw/4-2, 3ul);
+    size_t w = 0;
     program.add_argument("width")
         .help("width of the maze")
         .nargs(argparse::nargs_pattern::optional)
         .store_into(w);
 
-    size_t h = max(th/2-2, 3ul);
+    size_t h = 0;
     program.add_argument("height")
         .help("height of the maze")
         .nargs(argparse::nargs_pattern::optional)
@@ -40,6 +40,16 @@ int main(int argc, char* argv[]) {
     program.add_argument("--not_ascii", "--notAscii", "-na").flag()
         .help("disable print maze using ascii art")
         .store_into(asciiMaze);
+
+    uint8_t a_vws = 1;
+    program.add_argument("--ascii_vertical_wall_size", "--asciiVerticalWallSize", "-avws")
+        .help("vertical wall size in ascii art")
+        .store_into(a_vws);
+
+    uint8_t a_hws = 3;
+    program.add_argument("--ascii_horizontal_wall_size", "--asciiHorizontalWallSize", "-ahws")
+        .help("horizontal wall size in ascii art")
+        .store_into(a_hws);
 
     std::string pngFile;
     program.add_argument("--png_file", "--pngFile", "-pf")
@@ -69,6 +79,8 @@ int main(int argc, char* argv[]) {
     try {
         program.parse_args(argc, argv);
         asciiMaze = !asciiMaze;
+        if (w==0) w = max(tw/(1+a_hws)-2, 3ul);
+        if (h==0) h = max(th/(1+a_vws)-2, 3ul);
     }
     catch (const std::exception& err) {
         std::cerr << err.what() << std::endl;
@@ -77,7 +89,7 @@ int main(int argc, char* argv[]) {
     }
 
     const auto maze = Maze::make<BackendCUDA>(h, w, seed, verbose);
-    if (asciiMaze) std::cout << maze << std::endl;
+    if (asciiMaze) maze.print(std::cout, a_vws, a_hws) << std::endl;
     auto chrono = Chronometer();
     if (!pngFile.empty()) {
         maze.toPNG<BackendCUDA>(pngFile, png_vws, png_hws);
