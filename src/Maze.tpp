@@ -29,7 +29,7 @@ Maze Maze::make(const size_t height_, const size_t width_, const size_t seed_, c
 }
 
 template <Backend_T BackendSolver, Backend_T BackendViewer>
-void Maze::solve(const std::string& pngFile, const bool printPath, const bool verbose) const {
+void Maze::solve(const std::string& pngFile, const size_t verticalWallSize, const size_t horizontalWallSize, const bool printPath, const bool verbose) const {
     auto chrono = Chronometer();
     MazeSolution<size_t> solution = {
         {},
@@ -49,7 +49,7 @@ void Maze::solve(const std::string& pngFile, const bool printPath, const bool ve
         for (size_t i = 1; i < solution.maxDistance; ++i) {
             pathValues[i] = static_cast<char>(16 + i*207 / solution.maxDistance);
         }
-        toPNG<size_t, BackendViewer>(pngFile, 3, 3, solution.distanceToEnd, pathValues);
+        toPNG<size_t, BackendViewer>(pngFile, verticalWallSize, horizontalWallSize, solution.distanceToEnd, pathValues);
         if (verbose) std::cout << "Save maze solve to PNG in : " << chrono << std::endl;
     }
 }

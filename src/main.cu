@@ -46,6 +46,16 @@ int main(int argc, char* argv[]) {
         .help("save maze to png file")
         .store_into(pngFile);
 
+    uint8_t png_vws = 3;
+    program.add_argument("--png_vertical_wall_size", "--pngVerticalWallSize", "-pvws")
+        .help("vertical wall size in png file")
+        .store_into(png_vws);
+
+    uint8_t png_hws = 3;
+    program.add_argument("--png_horizontal_wall_size", "--pngHorizontalWallSize", "-phws")
+        .help("horizontal wall size in png file")
+        .store_into(png_hws);
+
     std::string solutionPngFile;
     program.add_argument("--solution_png_file", "--solutionPngFile", "-Spf")
         .help("save maze solve to png file")
@@ -70,12 +80,12 @@ int main(int argc, char* argv[]) {
     if (asciiMaze) std::cout << maze << std::endl;
     auto chrono = Chronometer();
     if (!pngFile.empty()) {
-        maze.toPNG<BackendCUDA>(pngFile);
+        maze.toPNG<BackendCUDA>(pngFile, png_vws, png_hws);
         if (verbose) std::cout << "Save Maze to PNG in : " << chrono << std::endl;
     }
     chrono.reset();
     if (!solutionPngFile.empty() || solve) {
-        maze.solve<BackendCPU, BackendCUDA>(solutionPngFile, solve, verbose);
+        maze.solve<BackendCPU, BackendCUDA>(solutionPngFile, png_vws, png_hws, solve, verbose);
     }
     return EXIT_SUCCESS;
 }

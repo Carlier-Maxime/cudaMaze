@@ -12,7 +12,7 @@ public:
     static Maze make(size_t height_, size_t width_, size_t seed_, bool verbose);
     ~Maze();
     template <Backend_T BackendSolver, Backend_T BackendViewer>
-    void solve(const std::string& pngFile, bool printPath, bool verbose) const;
+    void solve(const std::string& pngFile, size_t verticalWallSize, size_t horizontalWallSize, bool printPath, bool verbose) const;
     template <Backend_T Backend>
     void toPNG(const std::string& path) const;
     template <Backend_T Backend>
