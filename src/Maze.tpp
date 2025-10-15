@@ -30,9 +30,9 @@ Maze Maze::make(const size_t height_, const size_t width_, const size_t seed_, c
 }
 
 template <Backend_T BackendViewer>
-void Maze::solve(const std::string& pngFile, const size_t png_vws, const size_t png_hws, const bool printPath,
-                 const bool printMaze, const size_t a_vws, const size_t a_hws, const bool verbose) const {
-    auto sm = SolveMazeUBF{*this, pngFile, png_vws, png_hws, printPath, printMaze, a_vws, a_hws, verbose};
+void Maze::solve(SolveMaze& data) const {
+    data.maze = this;
+    auto sm = SolveMazeUBF{data};
     selectAndCallUBackendFunc<SolveMazeUBF, BackendViewer>(
         getGridSize(sm.a_vws, sm.a_hws), sm
     );
