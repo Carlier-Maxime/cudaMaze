@@ -79,8 +79,14 @@ int main(int argc, char* argv[]) {
     try {
         program.parse_args(argc, argv);
         asciiMaze = !asciiMaze;
-        if (w==0) w = max(tw/(1+a_hws)-2, 3ul);
-        if (h==0) h = max(th/(1+a_vws)-2, 3ul);
+        if (w==0) {
+            const long nw = static_cast<long>(tw)/(1+a_hws)-2;
+            w = max(nw>0 ? static_cast<size_t>(nw) : 0, 3ul);
+        }
+        if (h==0) {
+            const long nh = static_cast<long>(th)/(1+a_vws)-2;
+            h = max(nh>0 ? static_cast<size_t>(nh) : 0, 3ul);
+        }
     }
     catch (const std::exception& err) {
         std::cerr << err.what() << std::endl;
