@@ -17,6 +17,7 @@
 |||               |   |               |                           |                               |      
 +++---------------------------------------------------------------------------------------------------+++
 </pre>
+<img src="docs/preview.png" alt="CudaMaze Preview" width="100%">
 </div>
 
 Generate and solve perfect rectangular mazes using CUDA to accelerate processing on NVIDIA GPUs.
