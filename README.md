@@ -23,7 +23,7 @@ Generate and solve perfect rectangular mazes using CUDA to accelerate processing
 Maze generation use kruskal's algorithm with optimization for rectangular maze.
 Solving use CPU because much faster due to maze configuration.
 
-## 📋Requierements
+## 📋Requirements
 
 - **CMake** (version 3.29 or above)
 - **CUDA Toolkit** (compatible with your NVIDIA GPU)
