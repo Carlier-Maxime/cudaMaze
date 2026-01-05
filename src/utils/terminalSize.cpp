@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdio>
+#include <string>
 
 #ifdef __linux__
 #include <unistd.h>

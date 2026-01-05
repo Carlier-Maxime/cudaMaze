@@ -17,4 +17,7 @@ template<UnsignedIntegral U>
 struct Position {
     U x;
     U y;
+
+    Position(U _x, U _y) : x(_x), y(_y) {}
+    Position() : x(0), y(0) {}
 };

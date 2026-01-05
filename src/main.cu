@@ -81,11 +81,11 @@ int main(int argc, char* argv[]) {
         asciiMaze = !asciiMaze;
         if (w==0) {
             const long nw = static_cast<long>(tw)/(1+a_hws)-2;
-            w = max(nw>0 ? static_cast<size_t>(nw) : 0, 3ul);
+            w = std::max<size_t>(nw>0 ? nw : 0, 3);
         }
         if (h==0) {
             const long nh = static_cast<long>(th)/(1+a_vws)-2;
-            h = max(nh>0 ? static_cast<size_t>(nh) : 0, 3ul);
+            h = std::max<size_t>(nh>0 ? nh : 0, 3);
         }
     }
     catch (const std::exception& err) {
