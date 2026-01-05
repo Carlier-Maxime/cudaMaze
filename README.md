@@ -21,8 +21,41 @@
 </div>
 
 Generate and solve perfect rectangular mazes using CUDA to accelerate processing on NVIDIA GPUs.
-Maze generation use kruskal's algorithm with optimization for rectangular maze.
-Solving use CPU because much faster due to maze configuration.
+Maze generation uses kruskal's algorithm with optimization for rectangular maze.
+Solving is performed on the CPU because much faster due to maze configuration.
+
+## ⚡ Performance
+
+The project leverages a hybrid CPU/GPU pipeline to maximize efficiency between generation speed and pathfinding logic.
+
+### Computing Architecture :
+
+- Generation: Hardware-accelerated on GPU.
+- Solving: Computed on CPU.
+- Image Export: GPU-accelerated image data preparation, then saved to disk via stb_image_write.
+
+### Benchmarks
+
+Tested on: CUDA 13.1 | NVIDIA GeForce RTX 4060 Ti | 13th Gen Intel® Core™ i5-13400F
+```bash
+./maze --verbose -na -Spf mazeSolve.png (w) (h)
+```
+
+| Maze (WxH)    | Gen (ms) | Solve (ms) | Save (ms) |
+|---------------|----------|------------|-----------|
+| 256x256       | 102      | 3          | 61        |
+| 512x512       | 103      | 13         | 232       |
+| 1,024x1,024   | 115      | 56         | 931       |
+| 1,920x1,080   | 129      | 114        | 1,873     |
+| 2,560x1,600   | 126      | 219        | 3,662     |
+| 4,096x4,096   | 223      | 897        | 18,105    |
+| 8,192x8,192   | 630      | 3,742      | 65,215    |
+
+### Performance Note
+
+- **Scale Factor**: The output image resolution is significantly larger than the maze grid. With a default wall size of 3, the final image resolution is 4x larger than the maze dimensions (e.g., an 8k maze produces a ~32k image).
+- **Bottleneck**: The "Save" time is dominated by the PNG compression overhead on the CPU. While the GPU prepares the raw data instantly, encoding a high-resolution PNG is a single-threaded CPU-bound process.
+- **Methodology**: These statistics are one-shot measurements provided for indicative purposes and are not averaged over multiple runs.
 
 ## 📋Requirements
 
